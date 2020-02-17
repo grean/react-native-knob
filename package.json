@@ -1,0 +1,24 @@
+{
+  "name": "react-native-knob",
+  "version": "1.0.0",
+  "description": "Knob component for react native",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grean/react-native-knob.git"
+  },
+  "keywords": [
+    "knob",
+    "react",
+    "native"
+  ],
+  "author": "Guillaume Réan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grean/react-native-knob/issues"
+  },
+  "homepage": "https://github.com/grean/react-native-knob#readme"
+}
