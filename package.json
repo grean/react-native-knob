@@ -1,6 +1,6 @@
 {
   "name": "react-native-knob",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Knob component for react native",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "knob",
-    "react",
-    "native"
+    "circular",
+    "progress"
   ],
   "author": "Guillaume Réan",
   "license": "MIT",
