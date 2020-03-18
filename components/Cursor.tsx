@@ -12,11 +12,12 @@ interface CursorProps {
   radius: number;
   startX: number;
   startY: number;
+  strokeWidth: number;
   // startAngle: number;
   angle: Animated.Value<number>;
 }
 
-export default ({ radius, angle, startX, startY }: CursorProps) => {
+export default ({ radius, angle, startX, startY, strokeWidth }: CursorProps) => {
   const α = new Value(0);
   const x = new Value(startX);
   const y = new Value(startY);
@@ -27,20 +28,20 @@ export default ({ radius, angle, startX, startY }: CursorProps) => {
   const translationX = new Value(0);
   const translationY = new Value(0);
   const state = new Value(State.UNDETERMINED);
-  const onGestureEvent = event(
-    [
-      {
-        nativeEvent: {
-          translationX,
-          translationY,
-          state,
-        },
-      },
-    ],
-  );
+  // const onGestureEvent = event(
+  //   [
+  //     {
+  //       nativeEvent: {
+  //         translationX,
+  //         translationY,
+  //         state,
+  //       },
+  //     },
+  //   ],
+  // );
   return (
     <>
-      <Animated.Code>
+      {/* <Animated.Code>
         {
           () => block([
             cond(eq(state, State.ACTIVE), [
@@ -57,22 +58,22 @@ export default ({ radius, angle, startX, startY }: CursorProps) => {
             set(translateY, add(multiply(-1 * radius, sin(α)), radius)),
           ])
         }
-      </Animated.Code>
-      <PanGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}>
-        <Animated.View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'white',
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            transform: [
-              { translateX },
-              { translateY },
-            ],
-          }}
-        />
-      </PanGestureHandler>
+      </Animated.Code> */}
+      {/* <PanGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}> */}
+      <Animated.View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: 'white',
+          width: strokeWidth,
+          height: strokeWidth,
+          borderRadius: 25,
+          transform: [
+            { translateX },
+            { translateY },
+          ],
+        }}
+      />
+      {/* </PanGestureHandler> */}
     </>
   );
 };
