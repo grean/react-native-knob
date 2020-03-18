@@ -10,23 +10,20 @@ const {
 
 interface CursorProps {
   radius: number;
-  x: Animated.Value<number>;
-  y: Animated.Value<number>;
-  xOffset: Animated.Value<number>;
-  yOffset: Animated.Value<number>;
+  startX: number;
+  startY: number;
+  // startAngle: number;
   angle: Animated.Value<number>;
-  translateX: Animated.Value<number>;
-  translateY: Animated.Value<number>;
 }
 
-export default ({ radius, angle, x, y, xOffset, yOffset, translateX, translateY }: CursorProps) => {
-  // const α = new Value(0);
-  // const x = new Value(startX);
-  // const y = new Value(startY);
-  // const xOffset = new Value(x.);
-  // const yOffset = new Value(0);
-  // const translateX = new Value(0);
-  // const translateY = new Value(0);
+export default ({ radius, angle, startX, startY }: CursorProps) => {
+  const α = new Value(0);
+  const x = new Value(startX);
+  const y = new Value(startY);
+  const xOffset = new Value(startX);
+  const yOffset = new Value(startY);
+  const translateX = new Value(0);
+  const translateY = new Value(0);
   const translationX = new Value(0);
   const translationY = new Value(0);
   const state = new Value(State.UNDETERMINED);
@@ -54,10 +51,10 @@ export default ({ radius, angle, x, y, xOffset, yOffset, translateX, translateY 
               set(xOffset, x),
               set(yOffset, y),
             ]),
-            set(angle, atan2(add(multiply(y, -1), radius), sub(x, radius))),
-            // set(angle, α),
-            set(translateX, add(multiply(radius, cos(angle)), radius)),
-            set(translateY, add(multiply(-1 * radius, sin(angle)), radius)),
+            set(α, atan2(add(multiply(y, -1), radius), sub(x, radius))),
+            set(angle, α),
+            set(translateX, add(multiply(radius, cos(α)), radius)),
+            set(translateY, add(multiply(-1 * radius, sin(α)), radius)),
           ])
         }
       </Animated.Code>
