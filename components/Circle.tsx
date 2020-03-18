@@ -6,12 +6,13 @@ import { StyleSheet } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 const {
-  Value, event, block, cond, eq, set, add, sub, multiply, sin, cos, concat, lessThan,
+  Value, event, block, cond, eq, set, add, sub, multiply, sin, cos, concat, lessThan, debug,
 } = Animated;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const { PI } = Math;
+
 
 
 interface CircleProps {
@@ -47,6 +48,7 @@ export default ({ radius, angle, startX, startY, strokeWidth, canvasSize }: Circ
     ],
   );
 
+  // console.log(`dev : ${global.__DEV__}`);
   const circumference = radius * 2 * PI;
   // const delta =
   //   sub(
@@ -60,17 +62,18 @@ export default ({ radius, angle, startX, startY, strokeWidth, canvasSize }: Circ
   // const strokeDashoffset = multiply(end, radius);
   const strokeDashoffset = multiply(angle, radius);
   // const rotateZ = concat(sub(Math.PI * 2, start), 'rad');
-  const rotateZ = concat(multiply(-1, Math.PI / 2), 'rad');
-
+  // const rotateZ = concat(multiply(-1, Math.PI / 2), 'rad');
   return (
     <>
       <Animated.Code>
         {
           () => block([
-            // cond(eq(state, State.ACTIVE), [
-            //   set(x, xOffset),
-            //   set(y, yOffset),
-            // ]),
+            cond(eq(x, radius), debug('xTrue', x), debug('xFalse', x)),
+            cond(eq(state, State.ACTIVE), [
+              debug('xoaouaoua', x),
+              // set(x, xOffset),
+              // set(y, yOffset),
+            ]),
             // cond(eq(state, State.END), [
             //   set(xOffset, x),
             //   set(yOffset, y),
@@ -85,9 +88,10 @@ export default ({ radius, angle, startX, startY, strokeWidth, canvasSize }: Circ
       <TapGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}>
         <Animated.View style={{
           ...StyleSheet.absoluteFillObject,
-          transform: [
-            { rotateZ },
-          ],
+          // transform: [
+          //   { rotateZ },
+          // ],
+          backgroundColor: 'blue',
         }}
         >
           <Svg width={canvasSize} height={canvasSize}>

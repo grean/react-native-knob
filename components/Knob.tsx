@@ -10,7 +10,7 @@ const {
   Value, multiply, sub, concat, lessThan, cond, add,
 } = Animated;
 
-
+const { PI } = Math;
 
 const { width } = Dimensions.get('window');
 const marginWidth = 16;
@@ -24,15 +24,13 @@ const startY = 0;
 export default () => {
   // const start = new Value(0);
   // const start = new Value(PI / 2);
-  const end = new Value(0);
-  // const end = new Value(PI / 2);
+  // const end = new Value(0);
+  const end = new Value(PI / 2);
 
   return (
     <View style={styles.container}>
       <Circle angle={end} {...{ radius, startX, startY, canvasSize, strokeWidth }} />
-
-      {/* <Cursor angle={start} {...{ radius }} /> */}
-      <Cursor angle={end} {...{ radius, startX, startY, strokeWidth }} />
+      {/* <Cursor angle={end} {...{ radius, startX, startY, strokeWidth }} /> */}
     </View>
   );
 };
