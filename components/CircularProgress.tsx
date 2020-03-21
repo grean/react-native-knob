@@ -3,25 +3,25 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Svg, {
   Defs, LinearGradient, Stop, Path,
 } from 'react-native-svg';
-import Animated, { lessThan } from 'react-native-reanimated';
+import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
 import { atan2 } from 'react-native-redash';
 
 const { interpolate, multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, greaterOrEq, concat } = Animated;
 
 interface polarToCartesianReturn {
-  x: number,
-  y: number
+  x: Animated.Node<number>,
+  y: Animated.Node<number>,
 }
 
-function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: number): polarToCartesianReturn {
+function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: Animated.Value<number>): polarToCartesianReturn {
   //   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
   var offset = 0;
   // var offset = Math.PI / 2;
 
   return {
-    x: centerX + (radius * Math.cos(angleInRadians - offset)),
-    y: centerY + (radius * Math.sin(angleInRadians - offset)),
+    x: add(centerX, multiply(radius, cos(sub(angleInRadians, offset)))),
+    y: add(centerY, multiply(radius, sin(sub(angleInRadians, offset)))),
   };
 }
 
@@ -46,13 +46,16 @@ export default ({ progress }: CircularPogressProps) => {
   const angleKnob = new Value(0);
   const translateX = new Value(0);
   const translateY = new Value(0);
+  const startAngle = new Value(0);
+  // const endAngle = new Value(PI * 0.25);
+  const largeArcFlag = new Value(0);
   const state = new Value(State.UNDETERMINED);
   const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 
-  const startAngle = 0;
-  const endAngle = PI * 0.25;
-  var start = polarToCartesian(cx, cy, r, endAngle);
+  // const startAngle = 0;
+  // const endAngle = PI * 0.25;
+  var start = polarToCartesian(cx, cy, r, angleKnob);
   var end = polarToCartesian(cx, cy, r, startAngle);
 
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
@@ -60,12 +63,13 @@ export default ({ progress }: CircularPogressProps) => {
   // const y1 = -r * Math.sin(startAngle) + cy;
   // const x2 = cx + r * Math.cos(endAngle);
   // const y2 = -r * Math.sin(endAngle) + cy;
-  var largeArcFlag = endAngle - startAngle <= PI ? '0' : '1';
+  // set(largeArcFlag, cond(lessOrEq(sub(angleKnob, startAngle), PI), '0', '1'));
   var sweep = '0';
   // var sweep = endAngle - startAngle <= PI ? '1' : '0';
   // var sweep = startAngle - endAngle <= PI ? '0' : '1';
   // var largeArcFlag = endAngle - startAngle <= -PI ? '0' : '1';
-  const d = `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${end.x} ${end.y}`;
+  const d = concat('M ', start.x, ' ', start.y, ' A ', r, ' ', r, ' 0 ', largeArcFlag, ' ', sweep, ' ', end.x, ' ', end.y);
+  // const d = concat(`M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${end.x} ${end.y}`);
   // const d = `M ${x1} ${y1} A ${r} ${r} 0 1 0 ${x2} ${y2}`;
   // const d = `M ${x1} ${y1} A ${r} ${r} 0 0 0 ${x2} ${y2}`;
 
@@ -122,6 +126,7 @@ export default ({ progress }: CircularPogressProps) => {
               α,
             ])),
             set(angleKnob, multiply(-1, add(angleKnob, -2 * PI))),
+            set(largeArcFlag, cond(lessOrEq(sub(angleKnob, startAngle), PI), 0, 1)),
             // set(angleKnob, add(multiply(-1, add(angleKnob, -2 * PI)), -3 * PI / 2)),
 
             // debug('cos α', cos(α)),
