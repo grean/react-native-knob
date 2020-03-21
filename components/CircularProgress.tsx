@@ -15,7 +15,6 @@ interface polarToCartesianReturn {
 }
 
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: Animated.Value<number>): polarToCartesianReturn {
-  //   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
   var offset = 0;
   // var offset = Math.PI / 2;
 
@@ -27,11 +26,12 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
 
 
 
-interface CircularPogressProps {
-  progress: Animated.Node<number>;
-}
+// interface CircularPogressProps {
+//   progress: Animated.Node<number>;
+// }
 
-export default ({ progress }: CircularPogressProps) => {
+// export default ({ progress }: CircularPogressProps) => {
+export default () => {
   const { width } = Dimensions.get('window');
   const size = width - 32;
   const strokeWidth = 50;
@@ -53,28 +53,13 @@ export default ({ progress }: CircularPogressProps) => {
   const AnimatedPath = Animated.createAnimatedComponent(Path);
   const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
+  let start = polarToCartesian(cx, cy, r, angleKnob);
+  let end = polarToCartesian(cx, cy, r, startAngle);
 
-  // const startAngle = 0;
-  // const endAngle = PI * 0.25;
-  var start = polarToCartesian(cx, cy, r, angleKnob);
-  var end = polarToCartesian(cx, cy, r, startAngle);
-
+  let sweep = '0';
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-  // const x1 = cx - r * Math.cos(startAngle);
-  // const y1 = -r * Math.sin(startAngle) + cy;
-  // const x2 = cx + r * Math.cos(endAngle);
-  // const y2 = -r * Math.sin(endAngle) + cy;
-  // set(largeArcFlag, cond(lessOrEq(sub(angleKnob, startAngle), PI), '0', '1'));
-  var sweep = '0';
-  // var sweep = endAngle - startAngle <= PI ? '1' : '0';
-  // var sweep = startAngle - endAngle <= PI ? '0' : '1';
-  // var largeArcFlag = endAngle - startAngle <= -PI ? '0' : '1';
   const d = concat('M ', start.x, ' ', start.y, ' A ', r, ' ', r, ' 0 ', largeArcFlag, ' ', sweep, ' ', end.x, ' ', end.y);
   // const d = concat(`M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${end.x} ${end.y}`);
-  // const d = `M ${x1} ${y1} A ${r} ${r} 0 1 0 ${x2} ${y2}`;
-  // const d = `M ${x1} ${y1} A ${r} ${r} 0 0 0 ${x2} ${y2}`;
-
-
 
   const onGestureEvent = event(
     [
@@ -87,22 +72,13 @@ export default ({ progress }: CircularPogressProps) => {
       },
     ],
   );
-  // const circumference = r * A;
-  // const α = interpolate(progress, {
-  //   inputRange: [0, 1],
-  //   outputRange: [0, A],
-  // });
-  // const strokeDashoffset = multiply(α, r);
+
   const rotateZ = concat(-Math.PI / 2, 'rad');
   return (
     <>
       <Animated.Code>
         {
           () => block([
-            // debug('init x ', x),
-            // debug('init y ', y),
-            //             debug('init x ', sub(x, strokeWidth / 2)),
-            // debug('init y ', sub(y, strokeWidth / 2)),
             // set(x, sub(x, xOffset)),
             // debug('x ', x),
             // set(y, sub(y, yOffset)),
@@ -128,15 +104,7 @@ export default ({ progress }: CircularPogressProps) => {
             ])),
             set(angleKnob, multiply(-1, add(angleKnob, -2 * PI))),
             set(largeArcFlag, cond(lessOrEq(sub(angleKnob, startAngle), PI), 0, 1)),
-            // set(angleKnob, add(multiply(-1, add(angleKnob, -2 * PI)), -3 * PI / 2)),
-
-            // debug('cos α', cos(α)),
-            // set(α, cond(lessThan(translateX, 0), [
-            //   add(α, PI),
-            // ])),
-            // debug('debug α ', α),
             debug('       debug angleKnob ', angleKnob),
-            // set(angle, α),
             set(x, add(multiply(canvasRadius, cos(α)), canvasRadius)),
             set(y, add(multiply(-1 * canvasRadius, sin(α)), canvasRadius)),
             // debug('translate x ', x),
@@ -168,7 +136,6 @@ export default ({ progress }: CircularPogressProps) => {
           transform: [
             { rotateZ },
           ],
-          // backgroundColor: '#333',
         }}
         >
           <Svg width={size} height={size}>
@@ -186,7 +153,6 @@ export default ({ progress }: CircularPogressProps) => {
             <AnimatedPath
               stroke="url(#grad)"
               fill="none"
-              // strokeDasharray={`${circumference}, ${circumference}`}
               {...{ d, strokeWidth }}
             />
           </Svg>
