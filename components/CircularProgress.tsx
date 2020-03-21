@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Svg, {
-  Defs, LinearGradient, Stop, Path,
+  Defs, LinearGradient, Stop, Path, Circle,
 } from 'react-native-svg';
 import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
@@ -51,6 +51,7 @@ export default ({ progress }: CircularPogressProps) => {
   const largeArcFlag = new Value(0);
   const state = new Value(State.UNDETERMINED);
   const AnimatedPath = Animated.createAnimatedComponent(Path);
+  const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 
   // const startAngle = 0;
@@ -167,7 +168,7 @@ export default ({ progress }: CircularPogressProps) => {
           transform: [
             { rotateZ },
           ],
-          backgroundColor: '#333',
+          // backgroundColor: '#333',
         }}
         >
           <Svg width={size} height={size}>
@@ -177,12 +178,11 @@ export default ({ progress }: CircularPogressProps) => {
                 <Stop offset="1" stopColor="#46ef37" />
               </LinearGradient>
             </Defs>
-            {/* <Path
-              stroke="white"
+            <AnimatedCircle
+              {...{ strokeWidth, cx, cy, r }}
+              stroke="rgb(50, 50, 50)"
               fill="none"
-              // strokeDasharray={`${circumference}, ${circumference}`}
-              {...{ d, strokeWidth }}
-            /> */}
+            />
             <AnimatedPath
               stroke="url(#grad)"
               fill="none"
