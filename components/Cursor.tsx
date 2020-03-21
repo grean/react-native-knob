@@ -9,39 +9,33 @@ const {
 } = Animated;
 
 interface CursorProps {
-  radius: number;
-  startX: number;
-  startY: number;
+  x: Animated.Value<number>;
+  y: Animated.Value<number>;
   strokeWidth: number;
-  // startAngle: number;
-  angle: Animated.Value<number>;
 }
 
-export default ({ radius, angle, startX, startY, strokeWidth }: CursorProps) => {
-  const α = new Value(0);
-  const x = new Value(startX);
-  const y = new Value(startY);
-  const xOffset = new Value(startX);
-  const yOffset = new Value(startY);
-  const translateX = new Value(0);
-  const translateY = new Value(0);
+export default ({ x, y, strokeWidth }: CursorProps) => {
+  const xOffset = new Value(0);
+  set(xOffset, x);
+  const yOffset = new Value(0);
+  set(yOffset, y);
   const translationX = new Value(0);
   const translationY = new Value(0);
   const state = new Value(State.UNDETERMINED);
-  // const onGestureEvent = event(
-  //   [
-  //     {
-  //       nativeEvent: {
-  //         translationX,
-  //         translationY,
-  //         state,
-  //       },
-  //     },
-  //   ],
-  // );
+  const onGestureEvent = event(
+    [
+      {
+        nativeEvent: {
+          translationX,
+          translationY,
+          state,
+        },
+      },
+    ],
+  );
   return (
     <>
-      {/* <Animated.Code>
+      <Animated.Code>
         {
           () => block([
             cond(eq(state, State.ACTIVE), [
@@ -52,28 +46,28 @@ export default ({ radius, angle, startX, startY, strokeWidth }: CursorProps) => 
               set(xOffset, x),
               set(yOffset, y),
             ]),
-            set(α, atan2(add(multiply(y, -1), radius), sub(x, radius))),
-            set(angle, α),
-            set(translateX, add(multiply(radius, cos(α)), radius)),
-            set(translateY, add(multiply(-1 * radius, sin(α)), radius)),
+            // set(angle, atan2(add(multiply(y, -1), r), sub(x, r))),
+            // set(angle, angle),
+            // set(translateX, add(multiply(r, cos(angle)), r)),
+            // set(translateY, add(multiply(-1 * r, sin(angle)), r)),
           ])
         }
-      </Animated.Code> */}
-      {/* <PanGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}> */}
-      <Animated.View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          backgroundColor: 'white',
-          width: strokeWidth,
-          height: strokeWidth,
-          borderRadius: 25,
-          transform: [
-            { translateX },
-            { translateY },
-          ],
-        }}
-      />
-      {/* </PanGestureHandler> */}
+      </Animated.Code>
+      <PanGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}>
+        <Animated.View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'white',
+            width: strokeWidth,
+            height: strokeWidth,
+            borderRadius: strokeWidth / 2,
+            transform: [
+              { translateX: x },
+              { translateY: y },
+            ],
+          }}
+        />
+      </PanGestureHandler>
     </>
   );
 };

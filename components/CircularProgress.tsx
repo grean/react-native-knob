@@ -7,6 +7,8 @@ import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
 import { atan2 } from 'react-native-redash';
 
+import Cursor from './Cursor';
+
 const { interpolate, multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, greaterOrEq, concat } = Animated;
 
 interface polarToCartesianReturn {
@@ -26,20 +28,19 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
 
 
 
-// interface CircularPogressProps {
-//   progress: Animated.Node<number>;
-// }
+interface CircularPogressProps {
+  canvasSize: number;
+  strokeWidth: number;
+}
 
-// export default ({ progress }: CircularPogressProps) => {
-export default () => {
-  const { width } = Dimensions.get('window');
-  const size = width - 32;
-  const strokeWidth = 50;
+export default ({ canvasSize, strokeWidth }: CircularPogressProps) => {
+
   const { PI } = Math;
-  const r = (size - strokeWidth) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
+  const r = (canvasSize - strokeWidth) / 2;
+  const cx = canvasSize / 2;
+  const cy = canvasSize / 2;
   const canvasRadius = r + strokeWidth / 2;
+
   const x = new Value(0);
   const y = new Value(0);
   const α = new Value(0);
@@ -50,6 +51,7 @@ export default () => {
   // const endAngle = new Value(PI * 0.25);
   const largeArcFlag = new Value(0);
   const state = new Value(State.UNDETERMINED);
+
   const AnimatedPath = Animated.createAnimatedComponent(Path);
   const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -94,7 +96,7 @@ export default () => {
             set(translateX, sub(x, canvasRadius)),
             // debug('translateX  ', translateX),
             set(translateY, sub(canvasRadius, y)),
-            // set(translateY, add(multiply(y, -1), canvasRadius)),
+            // set(translateY, add(multiply(y, -1), r)),
             // debug('translateY  ', translateY),
             set(α, atan2(translateY, translateX)),
             set(angleKnob, cond(lessThan(α, 0), [
@@ -105,8 +107,8 @@ export default () => {
             set(angleKnob, multiply(-1, add(angleKnob, -2 * PI))),
             set(largeArcFlag, cond(lessOrEq(sub(angleKnob, startAngle), PI), 0, 1)),
             debug('       debug angleKnob ', angleKnob),
-            set(x, add(multiply(canvasRadius, cos(α)), canvasRadius)),
-            set(y, add(multiply(-1 * canvasRadius, sin(α)), canvasRadius)),
+            set(x, add(multiply(r, cos(α)), r)),
+            set(y, add(multiply(-1 * r, sin(α)), r)),
             // debug('translate x ', x),
             // debug('translate y ', y),
           ])
@@ -115,19 +117,19 @@ export default () => {
       <View style={{
         position: 'absolute',
         zIndex: 1000,
-        height: size * 0.25,
-        width: size * 0.4,
-        top: size / 2 - size * 0.25 / 2,
-        left: size / 2 - size * 0.4 / 2,
+        height: canvasSize * 0.2,
+        width: canvasSize * 0.3,
+        top: canvasSize / 2 - canvasSize * 0.2 / 2,
+        left: canvasSize / 2 - canvasSize * 0.3 / 2,
         justifyContent: 'center',
+        borderColor: 'white',
+        borderWidth: 1,
       }}>
         <Text style={{
           color: 'white',
-          borderColor: 'white',
-          borderWidth: 1,
           textAlign: 'center',
           fontSize: 50,
-        }}>000</Text>
+        }}>00</Text>
 
       </View>
       <TapGestureHandler onHandlerStateChange={onGestureEvent} {...{ onGestureEvent }}>
@@ -138,7 +140,7 @@ export default () => {
           ],
         }}
         >
-          <Svg width={size} height={size}>
+          <Svg width={canvasSize} height={canvasSize}>
             <Defs>
               <LinearGradient id="grad" x1="0" y1="0" x2="50%" y2="0">
                 <Stop offset="0" stopColor="#f7cd46" />
@@ -156,6 +158,7 @@ export default () => {
               {...{ d, strokeWidth }}
             />
           </Svg>
+          <Cursor {...{ x, y, strokeWidth }} />
         </Animated.View>
       </TapGestureHandler>
     </>
