@@ -14,11 +14,12 @@ const { width } = Dimensions.get('window');
 const margin = 50;
 const canvasSize = width - margin;
 const strokeWidth = 50;
+const defaultAngle = 0;
 
 export default () => {
   return (
     <View style={styles.container}>
-      <CircularProgress {...{ canvasSize, strokeWidth }} />
+      <CircularProgress {...{ canvasSize, strokeWidth, defaultAngle }} />
       {/* <Circle angle={end} {...{ radius, startX, startY, canvasSize, strokeWidth }} /> */}
       {/* <Cursor angle={end} {...{ radius, startX, startY, strokeWidth }} /> */}
     </View>
