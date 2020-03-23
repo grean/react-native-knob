@@ -1,70 +1,60 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Svg, {
   Defs, LinearGradient, Stop, Path, Circle,
 } from 'react-native-svg';
 import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
 import { TapGestureHandler, State, PanGestureHandler } from 'react-native-gesture-handler';
-import { atan2 } from 'react-native-redash';
+import { ReText } from 'react-native-redash';
 
 import Cursor from './Cursor';
 
-const { interpolate, multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, greaterOrEq, concat, eq } = Animated;
-
-interface polarToCartesianReturn {
-  x: Animated.Node<number>,
-  y: Animated.Node<number>,
-}
-
-function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: Animated.Value<number>): polarToCartesianReturn {
-  var offset = 0;
-  // var offset = Math.PI / 2;
-
-  return {
-    x: add(centerX, multiply(radius, cos(sub(angleInRadians, offset)))),
-    y: add(centerY, multiply(radius, sin(sub(angleInRadians, offset)))),
-  };
-}
-
-
+const { interpolate, multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, greaterOrEq, concat, eq, tan, call, round } = Animated;
 
 interface CircularPogressProps {
   canvasSize: number;
   strokeWidth: number;
   defaultAngle: number;
+  rotation: number;
 }
 
-export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps) => {
+export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPogressProps) => {
+
+  const [endAngleText, setEndAngleText] = useState(defaultAngle);
 
   const { PI } = Math;
   const cx = canvasSize / 2;
   const cy = canvasSize / 2;
   const r = (canvasSize - strokeWidth) / 2;
-  const canvasRadius = r + strokeWidth / 2;
+  const canvasRadius = canvasSize / 2;
+  const p = strokeWidth / 2;
 
   const startAngle = new Value(0);
   const endAngle = new Value(defaultAngle);
+  const α = new Value(0);
 
+  const startX = add(cx, multiply(r, cos(startAngle)));
+  const startY = add(cy, multiply(r, sin(startAngle)));
+  const endX = new Value(0);
+  const endY = new Value(0);
   const x = new Value(0);
   const y = new Value(0);
-  const translationX = new Value(0);
-  const translationY = new Value(0);
 
-  const α = new Value(0);
   const translateX = new Value(0);
   const translateY = new Value(0);
 
   const state = new Value(State.UNDETERMINED);
-
-  let start = polarToCartesian(cx, cy, r, startAngle);
-  let end = polarToCartesian(cx, cy, r, endAngle);
   const largeArcFlag = new Value(0);
   let sweep = '1';
-  // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-  const d = concat('M ', start.x, ' ', start.y, ' A ', r, ' ', r, ' 0 ', largeArcFlag, ' ', sweep, ' ', end.x, ' ', end.y);
+
+  // arcTo specifictaion => A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+  const d = new Animated.Value('');
 
   const AnimatedPath = Animated.createAnimatedComponent(Path);
   const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+  const AnimatedText = Animated.createAnimatedComponent(Text);
+  const knobTapRef = React.createRef<TapGestureHandler>();
+  const knobPanRef = React.createRef<PanGestureHandler>();
 
 
   const onGestureEvent = event(
@@ -73,28 +63,15 @@ export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps)
         nativeEvent: {
           x,
           y,
-          translationX,
-          translationY,
           state,
         },
       },
     ],
   );
-  // const onPanGestureEvent = event(
-  //   [
-  //     {
-  //       nativeEvent: {
-  //         statePan,
-  //       },
-  //     },
-  //   ],
-  // );
 
-  const rotateZ = concat(-Math.PI / 2, 'rad');
-  console.log('CircularProgress console log');
-  debug('CircularProgress rotateZ ', rotateZ);
-  const knobTapRef = React.createRef<TapGestureHandler>();
-  const knobPanRef = React.createRef<PanGestureHandler>();
+  //for Animated.View rotation
+  const rotateZ = concat(rotation, 'rad');
+
   return (
     <>
       <Animated.Code>
@@ -107,39 +84,52 @@ export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps)
             //   ACTIVE = 4,
             //   END = 5,
             debug('state ', state),
+            //if component first load, init with default value, defined at the begining
+            cond(eq(state, State.UNDETERMINED), [
+              //set x and y in canvas coordinates
+              set(x, add(cx, multiply(r, cos(endAngle)))),
+              set(y, add(cy, multiply(r, sin(endAngle)))),
+            ]),
             debug('x ', x),
             debug('y ', y),
-            debug('translationX ', translationX),
-            debug('translationY ', translationY),
-            debug('d ', d),
-            cond(eq(state, State.ACTIVE), [
-              set(x, add(x, translationX)),
-              set(y, add(y, translationY)),
-            ]),
+            //translate x and y to polar coordinates
             set(translateX, sub(x, canvasRadius)),
-            // debug('translateX  ', translateX),
             set(translateY, sub(canvasRadius, y)),
-            // set(translateY, add(multiply(y, -1), r)),
-            // debug('translateY  ', translateY),
-            set(α, atan2(translateY, translateX)),
-            set(endAngle, cond(lessThan(α, 0), [
-              add(α, 2 * PI),
-            ], [
-              α,
-            ])),
+            debug('translateX  ', translateX),
+            debug('translateY  ', translateY),
+
+            //complete atan2 function with atan because redash atan2 function not enough accurate
+            set(α, cond(eq(translateX, 0), tan(-1), atan(divide(translateY, translateX)))),
+            //for quandrant 2 and 3 we add PI to get 2PI values (first quadrant is top right)
+            cond(lessThan(translateX, 0), set(α, add(α, PI))),
+            //tan function give us an angle of [0, PI];[-PI, 0] so we need to have 2PI radians value representation
+            set(α, cond(lessThan(α, 0), add(α, 2 * PI), α)),
             debug('α ', α),
-            set(endAngle, multiply(-1, add(endAngle, -2 * PI))),
+
+            //We need to add -2PI and then invert the sign in order to inverse the rotation
+            set(endAngle, multiply(-1, add(α, -2 * PI))),
             debug('endAngle ', endAngle),
+
+            //SVG attribut computation for small or large arc. We always need large arc.
             set(largeArcFlag, cond(lessOrEq(sub(endAngle, startAngle), PI), 0, 1)),
-            // debug('       debug endAngle ', endAngle),
-            set(x, add(multiply(r, cos(α)), r)),
-            set(y, add(multiply(-1 * r, sin(α)), r)),
-            // debug('translate x ', x),
-            // debug('translate y ', y),
+
+            //calculate end arcTo coordinates
+            set(endX, add(cx, multiply(r, cos(endAngle)))),
+            set(endY, add(cy, multiply(r, sin(endAngle)))),
+
+            set(d, concat('M ', startX, ' ', startY, ' A ', r, ' ', r, ' 0 ', largeArcFlag, ' ', sweep, ' ', endX, ' ', endY)),
+            debug('d ', d),
           ])
         }
       </Animated.Code>
-      <View style={{
+      {/* <Animated.Code>
+        {
+          () => call([endAngle], ([endAngleText]) => setEndAngleText(endAngleText))
+        }
+      </Animated.Code> */}
+
+
+      <Animated.View style={{
         position: 'absolute',
         zIndex: 1000,
         height: canvasSize * 0.2,
@@ -150,13 +140,20 @@ export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps)
         borderColor: 'white',
         borderWidth: 1,
       }}>
-        <Text style={{
-          color: 'white',
-          textAlign: 'center',
-          fontSize: 50,
-        }}>00</Text>
+        {/* <AnimatedText style={{
+        }}>
+        {concat(endX)}
+      </AnimatedText> */}
+        <ReText
+          text={concat(round(multiply(divide(endAngle, 2 * PI), 100)))}
+          style={{
+            color: 'white',
+            textAlign: 'center',
+            fontSize: 50,
+          }}
+        />
 
-      </View>
+      </Animated.View>
       <PanGestureHandler
         ref={knobPanRef}
         simultaneousHandlers={knobTapRef}
@@ -165,9 +162,9 @@ export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps)
       >
         <Animated.View style={{
           ...StyleSheet.absoluteFillObject,
-          // transform: [
-          //   { rotateZ },
-          // ],
+          transform: [
+            { rotateZ },
+          ],
         }}
         >
           <TapGestureHandler
@@ -200,7 +197,7 @@ export default ({ canvasSize, strokeWidth, defaultAngle }: CircularPogressProps)
                   {...{ d, strokeWidth }}
                 />
               </Svg>
-              <Cursor {...{ x, y, strokeWidth }} />
+              <Cursor {...{ x: sub(endX, p), y: sub(endY, p), strokeWidth }} />
             </Animated.View>
           </TapGestureHandler>
         </Animated.View>

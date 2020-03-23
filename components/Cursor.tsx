@@ -8,8 +8,8 @@ const {
 } = Animated;
 
 interface CursorProps {
-  x: Animated.Value<number>;
-  y: Animated.Value<number>;
+  x: Animated.Node<number>;
+  y: Animated.Node<number>;
   strokeWidth: number;
 }
 
