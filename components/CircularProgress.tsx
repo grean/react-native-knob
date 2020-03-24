@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import Svg, {
   Defs, LinearGradient, Stop, Path, Circle,
 } from 'react-native-svg';
 import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
 import { TapGestureHandler, State, PanGestureHandler } from 'react-native-gesture-handler';
-import { ReText } from 'react-native-redash';
+import { ReText, string } from 'react-native-redash';
 
 import Cursor from './Cursor';
 
-const { interpolate, multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, greaterOrEq, concat, eq, tan, call, round } = Animated;
+const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round } = Animated;
 
 interface CircularPogressProps {
   canvasSize: number;
@@ -19,8 +19,6 @@ interface CircularPogressProps {
 }
 
 export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPogressProps) => {
-
-  const [endAngleText, setEndAngleText] = useState(defaultAngle);
 
   const { PI } = Math;
   const cx = canvasSize / 2;
@@ -48,11 +46,9 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
   let sweep = '1';
 
   // arcTo specifictaion => A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-  const d = new Animated.Value('');
 
   const AnimatedPath = Animated.createAnimatedComponent(Path);
   const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-  const AnimatedText = Animated.createAnimatedComponent(Text);
   const knobTapRef = React.createRef<TapGestureHandler>();
   const knobPanRef = React.createRef<PanGestureHandler>();
 
@@ -98,7 +94,7 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
             debug('translateX  ', translateX),
             debug('translateY  ', translateY),
 
-            //complete atan2 function with atan because redash atan2 function not enough accurate
+            //complete atan2 function with atan because redash@9.6.0 atan2 function not enough accurate
             set(α, cond(eq(translateX, 0), tan(-1), atan(divide(translateY, translateX)))),
             //for quandrant 2 and 3 we add PI to get 2PI values (first quadrant is top right)
             cond(lessThan(translateX, 0), set(α, add(α, PI))),
@@ -116,18 +112,9 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
             //calculate end arcTo coordinates
             set(endX, add(cx, multiply(r, cos(endAngle)))),
             set(endY, add(cy, multiply(r, sin(endAngle)))),
-
-            set(d, concat('M ', startX, ' ', startY, ' A ', r, ' ', r, ' 0 ', largeArcFlag, ' ', sweep, ' ', endX, ' ', endY)),
-            debug('d ', d),
           ])
         }
       </Animated.Code>
-      {/* <Animated.Code>
-        {
-          () => call([endAngle], ([endAngleText]) => setEndAngleText(endAngleText))
-        }
-      </Animated.Code> */}
-
 
       <Animated.View style={{
         position: 'absolute',
@@ -140,10 +127,6 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
         borderColor: 'white',
         borderWidth: 1,
       }}>
-        {/* <AnimatedText style={{
-        }}>
-        {concat(endX)}
-      </AnimatedText> */}
         <ReText
           text={concat(round(multiply(divide(endAngle, 2 * PI), 100)))}
           style={{
@@ -194,7 +177,8 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
                 <AnimatedPath
                   stroke="url(#grad)"
                   fill="none"
-                  {...{ d, strokeWidth }}
+                  d={string`M ${startX} ${startY} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${endX} ${endY}`}
+                  {...{ strokeWidth }}
                 />
               </Svg>
               <Cursor {...{ x: sub(endX, p), y: sub(endY, p), strokeWidth }} />

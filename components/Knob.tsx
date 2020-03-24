@@ -1,14 +1,7 @@
-/* eslint-disable quotes */
 import * as React from 'react';
 import { Dimensions, View, StyleSheet } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
-import { timing } from "react-native-redash";
 
 import CircularProgress from './CircularProgress';
-
-const {
-  Value, multiply, sub, concat, lessThan, cond, add, Clock,
-} = Animated;
 
 const { PI } = Math;
 const { width } = Dimensions.get('window');
