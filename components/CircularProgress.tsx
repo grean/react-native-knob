@@ -1,34 +1,44 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
 import Svg, {
-  Defs, LinearGradient, Stop, Path, Circle,
+  Defs, LinearGradient, Stop, Path, Circle, RadialGradient,
 } from 'react-native-svg';
-import Animated, { lessThan, lessOrEq } from 'react-native-reanimated';
+import Animated, { lessThan, lessOrEq, greaterThan, not } from 'react-native-reanimated';
 import { TapGestureHandler, State, PanGestureHandler } from 'react-native-gesture-handler';
-import { ReText, string } from 'react-native-redash';
+import { ReText, string, interpolateColor } from 'react-native-redash';
 
 import Cursor from './Cursor';
 
-const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round } = Animated;
+const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or, call, onChange } = Animated;
 
 interface CircularPogressProps {
   canvasSize: number;
   strokeWidth: number;
-  defaultAngle: number;
+  // defaultAngle: number;
+  defaultValue: number;
+  fullKnobValue: number;
+  padding: number;
+  strokeWidthDecoration: number;
   rotation: number;
+  negative: boolean;
+  colors: Array<string>;
 }
 
-export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPogressProps) => {
+export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue, padding, strokeWidthDecoration, negative, colors }: CircularPogressProps) => {
+
+  // const [gradientIndex, setGradientIndex] = useState(0);
 
   const { PI } = Math;
   const cx = canvasSize / 2;
   const cy = canvasSize / 2;
-  const r = (canvasSize - strokeWidth) / 2;
+
+  const r = (canvasSize - strokeWidth - padding) / 2;
+  const rPlate = (canvasSize - strokeWidthDecoration) / 2;
   const canvasRadius = canvasSize / 2;
-  const p = strokeWidth / 2;
+  // const p = (strokeWidth) / 2;
 
   const startAngle = new Value(0);
-  const endAngle = new Value(defaultAngle);
+  const endAngle = new Value(fullKnobValue !== 0 ? defaultValue * 2 * PI / fullKnobValue : 0);
   const α = new Value(0);
 
   const startX = add(cx, multiply(r, cos(startAngle)));
@@ -38,6 +48,12 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
   const x = new Value(0);
   const y = new Value(0);
 
+  const aroundCountTmp = Math.round(fullKnobValue !== 0 ? defaultValue / fullKnobValue : 0);
+  const aroundCount = new Value(aroundCountTmp);
+  // const aroundCount = new Value(round());
+  const previousAngle = new Value(0);
+  const deltaSign = new Value(0);
+
   const translateX = new Value(0);
   const translateY = new Value(0);
 
@@ -45,12 +61,30 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
   const largeArcFlag = new Value(0);
   let sweep = '1';
 
+  // const canBeNegative = new Value(negative);
+
   // arcTo specifictaion => A rx ry x-axis-rotation large-arc-flag sweep-flag x y
 
   const AnimatedPath = Animated.createAnimatedComponent(Path);
   const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+  // Animated.addWhitelistedNativeProps({ stroke: true });
+  // const AnimatedStop = Animated.createAnimatedComponent(Stop);
+  // const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+  // const AnimatedStop = Animated.createAnimatedComponent(Stop);
+  // const AnimatedText = Animated.createAnimatedComponent(Text);
   const knobTapRef = React.createRef<TapGestureHandler>();
   const knobPanRef = React.createRef<PanGestureHandler>();
+
+  const bgColor = interpolateColor(abs(aroundCount), {
+    inputRange: colors.map((v, i) => i),
+    outputRange: colors,
+  });
+  let fgColorsTmp = [...colors];
+  fgColorsTmp.shift();
+  const fgColor = interpolateColor(abs(aroundCount), {
+    inputRange: fgColorsTmp.map((v, i) => i),
+    outputRange: fgColorsTmp,
+  });
 
 
   const onGestureEvent = event(
@@ -67,6 +101,21 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
 
   //for Animated.View rotation
   const rotateZ = concat(rotation, 'rad');
+
+  // const grads = gradients.map((color, key) => {
+  //   return (
+  //     <LinearGradient id={`gradient-${key}`} {...{ key }}>
+  //       <Stop
+  //         stopColor={color}
+  //         offset={0}
+  //       />
+  //       <Stop
+  //         stopColor={gradients2[key + 1]}
+  //         offset={1}
+  //       />
+  //     </LinearGradient>
+  //   );
+  // });
 
   return (
     <>
@@ -96,14 +145,21 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
 
             //complete atan2 function with atan because redash@9.6.0 atan2 function not enough accurate
             set(α, cond(eq(translateX, 0), tan(-1), atan(divide(translateY, translateX)))),
+            cond(or(
+              lessThan(translateX, 0),
+              and(
+                eq(translateX, 0),
+                greaterThan(translateY, 0)
+              )), set(α, add(α, PI))),
             //for quandrant 2 and 3 we add PI to get 2PI values (first quadrant is top right)
-            cond(lessThan(translateX, 0), set(α, add(α, PI))),
             //tan function give us an angle of [0, PI];[-PI, 0] so we need to have 2PI radians value representation
-            set(α, cond(lessThan(α, 0), add(α, 2 * PI), α)),
+            set(α, cond(lessOrEq(α, 0), add(α, 2 * PI), α)),
             debug('α ', α),
 
             //We need to add -2PI and then invert the sign in order to inverse the rotation
             set(endAngle, multiply(-1, add(α, -2 * PI))),
+            //when translateY === 0 then endAngle value is -0 and abs function don´t seems to remove sign.. so in this case we have to remove it by multiply by -1
+            cond(and(eq(translateY, 0), greaterThan(translateX, 0)), set(endAngle, multiply(-1, endAngle))),
             debug('endAngle ', endAngle),
 
             //SVG attribut computation for small or large arc. We always need large arc.
@@ -112,30 +168,54 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
             //calculate end arcTo coordinates
             set(endX, add(cx, multiply(r, cos(endAngle)))),
             set(endY, add(cy, multiply(r, sin(endAngle)))),
+            cond(eq(state, State.ACTIVE), [
+              //if endAngle > previousAngle then sign is 'plus' otherwise it´s 'minus'
+              set(deltaSign, sub(endAngle, previousAngle)),
+              cond(greaterThan(abs(deltaSign), 4),
+                cond(greaterThan(deltaSign, 0),
+                  cond(greaterThan(aroundCount, 0),
+                    set(aroundCount, sub(aroundCount, 1)),
+                    set(aroundCount, sub(aroundCount, negative ? 1 : 0))),
+                  set(aroundCount, add(aroundCount, 1))
+                )
+              )]
+            ),
+            debug('aroundCount ', aroundCount),
+            // onChange(aroundCount, call([aroundCount], ([aroundCount]) => setGradientIndex(aroundCount))),
+            // call([aroundCount], ([aroundCount]) => setGradientIndex(aroundCount)),
+            // onChange(aroundCount, call() => ),
+            set(previousAngle, endAngle),
           ])
         }
       </Animated.Code>
-
       <Animated.View style={{
         position: 'absolute',
         zIndex: 1000,
         height: canvasSize * 0.2,
-        width: canvasSize * 0.3,
+        width: canvasSize * 0.4,
         top: canvasSize / 2 - canvasSize * 0.2 / 2,
-        left: canvasSize / 2 - canvasSize * 0.3 / 2,
-        justifyContent: 'center',
-        borderColor: 'white',
-        borderWidth: 1,
+        left: canvasSize / 2 - canvasSize * 0.4 / 2,
+        justifyContent: 'space-evenly',
+        // backgroundColor: plateColor,
+        // borderColor: plateColor,
+        // borderWidth: 1,
       }}>
+        {/* <AnimatedText>
+          {string`${concat(round(add(multiply(divide(endAngle, 2 * PI), 100), multiply(100, aroundCount))))}`}
+        </AnimatedText> */}
         <ReText
-          text={concat(round(multiply(divide(endAngle, 2 * PI), 100)))}
+          text={concat(round(add(multiply(divide(endAngle, 2 * PI), 100), multiply(100, aroundCount))))}
           style={{
             color: 'white',
+            // borderColor: plateColor,
+            // borderWidth: 1,
+            // width: canvasSize * 0.5,
             textAlign: 'center',
-            fontSize: 50,
+            fontSize: canvasSize / 8,
+            // letterSpacing: 5,
           }}
-        />
 
+        />
       </Animated.View>
       <PanGestureHandler
         ref={knobPanRef}
@@ -162,30 +242,78 @@ export default ({ canvasSize, strokeWidth, defaultAngle, rotation }: CircularPog
                 ...StyleSheet.absoluteFillObject,
               }}
             >
+
               <Svg width={canvasSize} height={canvasSize}>
                 <Defs>
-                  <LinearGradient id="grad" x1="0" y1="0" x2="50%" y2="0">
-                    <Stop offset="0" stopColor="#f7cd46" />
-                    <Stop offset="1" stopColor="#46ef37" />
-                  </LinearGradient>
+                  {/* {grads} */}
+                  {/* {gradients.map((color, key) => {
+                    return (
+                      <LinearGradient id={`gradient-${key}`} {...{ key }} x1="0" y1="0" x2="50%" y2="0">
+                        <Stop
+                          stopColor={color}
+                          offset={0}
+                        />
+                        <Stop
+                          stopColor={color}
+                          offset={1}
+                        />
+                      </LinearGradient>
+                    );
+                  })} */}
+                  {/* <LinearGradient id="grad" x1="0" y1="0" x2="50%" y2="0">
+                    <AnimatedStop offset="0" stopColor={bgColor} />
+                    <Stop offset="1" stopColor={fgColor} />
+                  </LinearGradient> */}
+                  {/* <LinearGradient id="plate" x1="0" y1="0" x2="50%" y2="0">
+                    <Stop offset="0" stopColor="#222" />
+                    <Stop offset="1" stopColor="#888" />
+                  </LinearGradient> */}
+                  <RadialGradient id="radialPlateInt">
+                    <Stop offset="50%" stopColor="black" />
+                    <Stop offset="80%" stopColor="white" />
+                  </RadialGradient>
+                  <RadialGradient id="radialPlateExt">
+                    <Stop offset="100%" stopColor="white" />
+                    <Stop offset="90%" stopColor="black" />
+                  </RadialGradient>
                 </Defs>
+                {/* circle  decoration */}
+                <AnimatedCircle
+                  {...{ strokeWidth: strokeWidthDecoration, cx, cy, r: rPlate }}
+                  stroke="url(#radialPlateExt)"
+                  // stroke={plateColor}
+                  fill="none"
+                />
+                {/* circle  decoration center */}
+                <AnimatedCircle
+                  {...{ cx, cy, r }}
+                  fill="url(#radialPlateInt)"
+                // fill={plateColor}
+                />
                 <AnimatedCircle
                   {...{ strokeWidth, cx, cy, r }}
-                  stroke="rgb(50, 50, 50)"
+                  // stroke={`url(#gradient-${aroundCount})`}
+                  // stroke={'url(#gradient-0)'}
+                  // stroke="url(#plate)"
+                  stroke={bgColor}
                   fill="none"
                 />
                 <AnimatedPath
-                  stroke="url(#grad)"
+                  // stroke={concat("url(#gradient-", aroundCount, ")")}
+                  // stroke={'url(#gradient-1)'}
+                  // stroke="url(#grad)"
+                  stroke={fgColor}
                   fill="none"
                   d={string`M ${startX} ${startY} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${endX} ${endY}`}
                   {...{ strokeWidth }}
                 />
               </Svg>
-              <Cursor {...{ x: sub(endX, p), y: sub(endY, p), strokeWidth }} />
+              {/* <Cursor {...{ x: sub(endX, p), y: sub(endY, p), strokeWidth }} /> */}
             </Animated.View>
           </TapGestureHandler>
         </Animated.View>
       </PanGestureHandler>
+
     </>
   );
 };
