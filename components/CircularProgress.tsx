@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import Svg, {
-  Defs, LinearGradient, Stop, Path, Circle, RadialGradient,
+  Defs, Stop, Path, Circle, RadialGradient,
 } from 'react-native-svg';
-import Animated, { lessThan, lessOrEq, greaterThan, not } from 'react-native-reanimated';
+import Animated, { lessThan, lessOrEq, greaterThan } from 'react-native-reanimated';
 import { TapGestureHandler, State, PanGestureHandler } from 'react-native-gesture-handler';
 import { ReText, string, interpolateColor } from 'react-native-redash';
 
-import Cursor from './Cursor';
+// import Cursor from './Cursor';
 
-const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or, call, onChange } = Animated;
+const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or } = Animated;
 
 interface CircularPogressProps {
   canvasSize: number;
