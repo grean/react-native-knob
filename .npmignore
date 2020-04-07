@@ -1,0 +1,8 @@
+node_modules/
+src/
+assets/
+example/
+
+package-lock.json
+tsconfig.json
+*.tgz
