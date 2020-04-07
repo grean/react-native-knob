@@ -1,5 +1,7 @@
 # react-native-knob
-A simple and fully customizable React Native component that implements circular progress bar
+A simple and fully customizable React Native component that implements circular progress bar.
+
+It uses react-native-reanimated to get 60fps animation. and react-native-gesture-handler for the gestures.
 
 ## Works on both iPhone and Android
 | Iphone | Android |
@@ -19,13 +21,13 @@ If using npm :
 npm i react-native-knob
 ```
 
-## Additional steps
+### Additional installation steps
 Don´t forget to install pods if they are not installed yet
-### For ios from your root app folder run :
+#### For ios from your root app folder run :
 ```
 cd ios && pod install
 ```
-### For android :
+#### For android :
 You will need to add those lines in your java files if not already done on your project.
 It concerns the react-native-gesture-handler package see [documentation here](https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html#android) 
 
@@ -102,21 +104,6 @@ const styles = StyleSheet.create({
 | gradientExt | If you want to decorate your knob with an external radial gradient  | Array<StopGradient> | [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }]
 | textStyle | You can customize the text inside | object | { color: 'white', textAlign: 'center', fontSize: canvasSize / 8 }
 | textDisplay | If you don´t want the text in the middle | boolean | true
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Contributing
 Pull requests are always welcome! Feel free to open a new GitHub issue for any changes that can be made.
