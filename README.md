@@ -3,6 +3,9 @@ A simple and fully customizable React Native component that implements circular 
 
 It uses react-native-reanimated to get 60fps animation. and react-native-gesture-handler for the gestures.
 
+![](https://img.shields.io/npm/v/react-native-knob.svg?style=flat)
+![https://www.npmjs.com/package/react-native-knob](https://img.shields.io/npm/dt/react-native-knob.svg)
+
 ## Works on both iPhone and Android
 | Iphone | Android |
 | :---:  |  :---:  |
