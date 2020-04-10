@@ -24,8 +24,8 @@ const App = () => {
           margin={100}
           padding={64}
           strokeWidth={80}
-          defaultValue={0}
-          fullKnobValue={1000}
+          value={0}
+          maxValue={1000}
           rotation={0}
           negative={true}
           colors={['#F0EFF5', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']}

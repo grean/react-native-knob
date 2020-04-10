@@ -6,7 +6,7 @@ import { TapGestureHandler, State, PanGestureHandler } from 'react-native-gestur
 import { ReText, string, interpolateColor } from 'react-native-redash';
 // import Cursor from './Cursor';
 const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or } = Animated;
-export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }) => {
+export default ({ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }) => {
     // const [gradientIndex, setGradientIndex] = useState(0);
     const { PI } = Math;
     const cx = canvasSize / 2;
@@ -16,7 +16,7 @@ export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue
     const canvasRadius = canvasSize / 2;
     // const p = (strokeWidth) / 2;
     const startAngle = new Value(0);
-    const endAngle = new Value(fullKnobValue !== 0 ? defaultValue * 2 * PI / fullKnobValue : 0);
+    const endAngle = new Value(maxValue !== 0 ? value * 2 * PI / maxValue : 0);
     const α = new Value(0);
     const startX = add(cx, multiply(r, cos(startAngle)));
     const startY = add(cy, multiply(r, sin(startAngle)));
@@ -24,7 +24,7 @@ export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue
     const endY = new Value(0);
     const x = new Value(0);
     const y = new Value(0);
-    const aroundCountTmp = Math.round(fullKnobValue !== 0 ? defaultValue / fullKnobValue : 0);
+    const aroundCountTmp = Math.round(maxValue !== 0 ? value / maxValue : 0);
     const aroundCount = new Value(aroundCountTmp);
     const colorIndex = new Value(aroundCountTmp);
     // const aroundCount = new Value(round());

@@ -5188,10 +5188,10 @@ react-native-gesture-handler@^1.6.1:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
-react-native-knob@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-knob/-/react-native-knob-1.0.2.tgz#6c5808dc8eb224546f81e2f7ae37e08997d408db"
-  integrity sha512-tZmbXSq/FiakIgS+2o+FifkqSP+5BDsQS0uTHmzqwc8PtUdhcAfY11JEyDcIx2Duzx1SuS41Gslmv759OMbVqA==
+react-native-knob@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-knob/-/react-native-knob-1.0.5.tgz#f8b8eb0acf176a19400d6c3a88d502de131d41a4"
+  integrity sha512-NZEcK3SOrczH+eDIG+XjllbnKmcmFA3/oJ9BocbYKiUGa6R28QMf+LXDCKxiX7ffKtW4uelT7CLyCW6+AUfMhg==
 
 react-native-reanimated@^1.7.1:
   version "1.7.1"

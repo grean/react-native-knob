@@ -8,8 +8,8 @@ export interface Props {
   padding: number;
   strokeWidth: number;
   strokeWidthDecoration: number;
-  defaultValue: number;
-  fullKnobValue: number;
+  value: number;
+  maxValue: number;
   rotation: number;
   negative: boolean;
   colors: Array<string>;
@@ -27,7 +27,7 @@ export interface StopGradient {
 export default class Knob extends React.Component<Props> {
   render() {
     // const { margin } = this.props;
-    const { margin, strokeWidth, rotation, defaultValue, fullKnobValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay } = this.props;
+    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay } = this.props;
 
     const { width } = Dimensions.get('window');
     const canvasSize = width - margin;
@@ -37,7 +37,7 @@ export default class Knob extends React.Component<Props> {
         height: canvasSize,
         width: canvasSize,
       }}>
-        <CircularProgress {...{ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }} />
+        <CircularProgress {...{ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }} />
         {/* <CircularProgress {...{ canvasSize }} {...this.props} /> */}
       </View>
     );
@@ -47,8 +47,8 @@ export default class Knob extends React.Component<Props> {
     padding: 0,
     strokeWidth: 90,
     strokeWidthDecoration: 30,
-    defaultValue: 25,
-    fullKnobValue: 100,
+    value: 25,
+    maxValue: 100,
     rotation: -Math.PI / 2,
     negative: true,
     colors: ['#F0EFF5', '#00b5ad', '#2185D0', '#B5CC18', '#FBBD08', '#F2711C', '#DB2828', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000'],

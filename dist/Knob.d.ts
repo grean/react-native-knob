@@ -4,8 +4,8 @@ export interface Props {
     padding: number;
     strokeWidth: number;
     strokeWidthDecoration: number;
-    defaultValue: number;
-    fullKnobValue: number;
+    value: number;
+    maxValue: number;
     rotation: number;
     negative: boolean;
     colors: Array<string>;
@@ -25,8 +25,8 @@ export default class Knob extends React.Component<Props> {
         padding: number;
         strokeWidth: number;
         strokeWidthDecoration: number;
-        defaultValue: number;
-        fullKnobValue: number;
+        value: number;
+        maxValue: number;
         rotation: number;
         negative: boolean;
         colors: string[];

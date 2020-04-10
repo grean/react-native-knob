@@ -3,8 +3,7 @@ A simple and fully customizable React Native component that implements circular 
 
 It uses react-native-reanimated to get 60fps animation. and react-native-gesture-handler for the gestures.
 
-![](https://img.shields.io/npm/v/react-native-knob.svg?style=flat)
-![https://www.npmjs.com/package/react-native-knob](https://img.shields.io/npm/dt/react-native-knob.svg)
+[NPM package](https://www.npmjs.com/package/react-native-knob)
 
 ## Works on both iPhone and Android
 | Iphone | Android |
@@ -62,8 +61,8 @@ const App = () => {
           margin={100}
           padding={64}
           strokeWidth={80}
-          defaultValue={0}
-          fullKnobValue={1000}
+          value={0}
+          maxValue={1000}
           rotation={0}
           negative={true}
           colors={['#F0EFF5', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']}
@@ -98,8 +97,8 @@ const styles = StyleSheet.create({
 | padding | space between gradientInt and knob | number | 0
 | strokeWidth | explicit | number | 90
 | strokeWidthDecoration | the circle under the progress one | number | 30
-| defaultValue | explicit | number | 25
-| fullKnobValue | You can set any number value that you want. The knob will adapt and provide a percent value anyway | number | 100
+| value | explicit | number | 25
+| maxValue | You can set any number value that you want. The knob will adapt and provide a percent value anyway | number | 100
 | rotation | Begin position where the knob start. Value unit is in Radians. 0 is position to the right like in trigonometric circle. Under the hood, it´s a style transform using here. | number | -Math.PI / 2
 | negative | If your want the knob can be negative and goes inverted | boolean | true
 | colors | The colors of each loop. The first color is for decoration knob. | Array<string> | ['#F0EFF5', '#00b5ad', '#2185D0', '#B5CC18', '#FBBD08', '#F2711C', '#DB2828', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']

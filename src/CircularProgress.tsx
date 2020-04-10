@@ -15,8 +15,8 @@ const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, 
 interface CircularPogressProps {
   canvasSize: number;
   strokeWidth: number;
-  defaultValue: number;
-  fullKnobValue: number;
+  value: number;
+  maxValue: number;
   padding: number;
   strokeWidthDecoration: number;
   rotation: number;
@@ -30,7 +30,7 @@ interface CircularPogressProps {
 
 
 
-export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }: CircularPogressProps) => {
+export default ({ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }: CircularPogressProps) => {
 
   // const [gradientIndex, setGradientIndex] = useState(0);
 
@@ -44,7 +44,7 @@ export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue
   // const p = (strokeWidth) / 2;
 
   const startAngle = new Value(0);
-  const endAngle = new Value(fullKnobValue !== 0 ? defaultValue * 2 * PI / fullKnobValue : 0);
+  const endAngle = new Value(maxValue !== 0 ? value * 2 * PI / maxValue : 0);
   const α = new Value(0);
 
   const startX = add(cx, multiply(r, cos(startAngle)));
@@ -54,7 +54,7 @@ export default ({ canvasSize, strokeWidth, rotation, defaultValue, fullKnobValue
   const x = new Value(0);
   const y = new Value(0);
 
-  const aroundCountTmp = Math.round(fullKnobValue !== 0 ? defaultValue / fullKnobValue : 0);
+  const aroundCountTmp = Math.round(maxValue !== 0 ? value / maxValue : 0);
   const aroundCount = new Value(aroundCountTmp);
   const colorIndex = new Value(aroundCountTmp);
   // const aroundCount = new Value(round());
