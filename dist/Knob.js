@@ -1,18 +1,50 @@
-import * as React from 'react';
-import { Dimensions, View } from 'react-native';
+import React from 'react';
+import { View, PixelRatio } from 'react-native';
 import CircularProgress from './CircularProgress';
 export default class Knob extends React.Component {
+    constructor(props) {
+        super(props);
+        this.setValue = (val) => { if (this.state.cpRef.current !== null) {
+            this.state.cpRef.current.setValue(val);
+        } ; };
+        this.onLayout = (event) => {
+            // {nativeEvent: { layout: {x, y, width, height}}}
+            const { width, height } = event.nativeEvent.layout;
+            console.log("layautChange");
+            this.setState({
+                canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
+                refreshKey: Math.random(),
+            });
+        };
+        this.state = {
+            cpRef: React.createRef(),
+            // width: Dimensions.get('window').width,
+            // height: Dimensions.get('window').height,
+            // isLandscape: false,
+            canvasSize: props.canvasSize,
+            refreshKey: Math.random(),
+        };
+    }
     render() {
-        // const { margin } = this.props;
-        const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay } = this.props;
-        const { width } = Dimensions.get('window');
-        const canvasSize = width - margin;
-        return (<View style={{
-            height: canvasSize,
-            width: canvasSize,
+        const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style } = this.props;
+        const { cpRef, canvasSize, refreshKey } = this.state;
+        const canvasSizeMarged = (canvasSize ?? 0) - margin * 2;
+        return (<View style={[{
+                flex: 1,
+                alignSelf: 'stretch',
+            }, style]}>
+        <View onLayout={this.onLayout} style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
         }}>
-        <CircularProgress {...{ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }}/>
-        
+          <View style={{
+            height: canvasSizeMarged,
+            width: canvasSizeMarged,
+        }}>
+            <CircularProgress key={refreshKey.toString()} ref={cpRef} {...{ canvasSize: canvasSizeMarged, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}/>
+          </View>
+        </View>
       </View>);
     }
 }
@@ -29,5 +61,6 @@ Knob.defaultProps = {
     gradientInt: [{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#fff' }],
     gradientExt: [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }],
     textDisplay: true,
+    style: {},
 };
 //# sourceMappingURL=Knob.js.map

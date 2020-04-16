@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { Dimensions, View, StyleSheet, Text } from 'react-native';
+import React, { useRef } from 'react';
+import { Dimensions, View, LayoutChangeEvent, PixelRatio, RefreshControl } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 import CircularProgress from './CircularProgress';
 
-export interface Props {
+export interface KnobProps {
   margin: number;
   padding: number;
   strokeWidth: number;
@@ -15,8 +16,12 @@ export interface Props {
   colors: Array<string>;
   gradientInt: Array<StopGradient>;
   gradientExt: Array<StopGradient>;
+  style: object;
   textStyle: object;
   textDisplay: boolean;
+  callback: (values: readonly number[]) => void;
+  canvasSize: number | undefined;
+  // buttons: Array<ButtonKnob>;
 }
 
 export interface StopGradient {
@@ -24,22 +29,73 @@ export interface StopGradient {
   stopColor: string;
 }
 
-export default class Knob extends React.Component<Props> {
-  render() {
-    // const { margin } = this.props;
-    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay } = this.props;
+export interface KnobState {
+  cpRef: React.RefObject<CircularProgress>;
+  // width: number,
+  // height: number,
+  // isLandscape: boolean,
+  canvasSize: number | undefined,
+  refreshKey: number,
+  // value: number;
+  // buttonColor: string;
+  // textColor: string;
+}
 
-    const { width } = Dimensions.get('window');
-    const canvasSize = width - margin;
+export default class Knob extends React.Component<KnobProps, KnobState> {
+  constructor(props: KnobProps) {
+    super(props);
+    this.state = {
+      cpRef: React.createRef<CircularProgress>(),
+      // width: Dimensions.get('window').width,
+      // height: Dimensions.get('window').height,
+      // isLandscape: false,
+      canvasSize: props.canvasSize,
+      refreshKey: Math.random(),
+    }
+  }
+
+
+
+  setValue = (val: number) => { if (this.state.cpRef.current !== null) { this.state.cpRef.current.setValue(val) }; }
+
+  onLayout = (event: LayoutChangeEvent) => {
+    // {nativeEvent: { layout: {x, y, width, height}}}
+    const { width, height } = event.nativeEvent.layout;
+    console.log("layautChange");
+    this.setState({
+      canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
+      refreshKey: Math.random(),
+    });
+  }
+
+  render() {
+    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style } = this.props;
+    const { cpRef, canvasSize, refreshKey } = this.state;
+
+    const canvasSizeMarged = (canvasSize ?? 0) - margin * 2;
 
     return (
-      <View style={{
-        height: canvasSize,
-        width: canvasSize,
-      }}>
-        <CircularProgress {...{ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }} />
-        {/* <CircularProgress {...{ canvasSize }} {...this.props} /> */}
-      </View>
+      <View style={[{
+        flex: 1,
+        alignSelf: 'stretch',
+      }, style]}>
+        <View onLayout={this.onLayout} style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <View style={{
+            height: canvasSizeMarged,
+            width: canvasSizeMarged,
+          }}>
+            <CircularProgress
+              key={refreshKey.toString()}
+              ref={cpRef}
+              {...{ canvasSize: canvasSizeMarged, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}
+            />
+          </View>
+        </View>
+      </View >
     );
   }
   static defaultProps = {
@@ -55,5 +111,6 @@ export default class Knob extends React.Component<Props> {
     gradientInt: [{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#fff' }],
     gradientExt: [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }],
     textDisplay: true,
+    style: {},
   };
 }

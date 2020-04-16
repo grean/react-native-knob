@@ -1,4 +1,6 @@
-/// <reference types="react" />
+import React from 'react';
+import Animated from 'react-native-reanimated';
+import { State } from 'react-native-gesture-handler';
 import { StopGradient } from './Knob';
 interface CircularPogressProps {
     canvasSize: number;
@@ -14,7 +16,41 @@ interface CircularPogressProps {
     gradientExt: Array<StopGradient>;
     textStyle: object;
     textDisplay: boolean;
+    callback: (values: readonly number[]) => void;
 }
-declare const _default: ({ canvasSize, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay }: CircularPogressProps) => JSX.Element;
-export default _default;
+interface CircularPogressState {
+    cx: number;
+    cy: number;
+    r: number;
+    plateRadius: number;
+    canvasRadius: number;
+    startAngle: Animated.Value<number>;
+    endAngle: Animated.Value<number>;
+    α: Animated.Value<number>;
+    startX: number;
+    startY: number;
+    endX: Animated.Value<number>;
+    endY: Animated.Value<number>;
+    x: Animated.Value<number>;
+    y: Animated.Value<number>;
+    aroundCount: Animated.Value<number>;
+    colorIndex: Animated.Value<number>;
+    finalValue: Animated.Value<number>;
+    previousAngle: Animated.Value<number>;
+    deltaSign: Animated.Value<number>;
+    translateX: Animated.Value<number>;
+    translateY: Animated.Value<number>;
+    state: Animated.Value<State>;
+    largeArcFlag: Animated.Value<number>;
+    isFullCircle: Animated.Value<0 | 1>;
+    sweep: string;
+    testCircle: Animated.Value<number>;
+}
+export default class CircularProgress extends React.Component<CircularPogressProps, CircularPogressState> {
+    constructor(props: CircularPogressProps);
+    shouldComponentUpdate(nextProps: CircularPogressProps, nextState: CircularPogressState): boolean;
+    setValue: (value: number) => void;
+    render(): JSX.Element;
+}
+export {};
 //# sourceMappingURL=CircularProgress.d.ts.map
