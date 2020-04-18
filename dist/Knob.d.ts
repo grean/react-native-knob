@@ -30,6 +30,7 @@ export interface KnobState {
 }
 export default class Knob extends React.Component<KnobProps, KnobState> {
     constructor(props: KnobProps);
+    onLayoutTimeout: number;
     setValue: (val: number) => void;
     onLayout: (event: LayoutChangeEvent) => void;
     render(): JSX.Element;

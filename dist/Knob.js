@@ -4,17 +4,20 @@ import CircularProgress from './CircularProgress';
 export default class Knob extends React.Component {
     constructor(props) {
         super(props);
+        this.onLayoutTimeout = 0;
         this.setValue = (val) => { if (this.state.cpRef.current !== null) {
             this.state.cpRef.current.setValue(val);
         } ; };
         this.onLayout = (event) => {
             // {nativeEvent: { layout: {x, y, width, height}}}
             const { width, height } = event.nativeEvent.layout;
-            console.log("layautChange");
-            this.setState({
-                canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
-                refreshKey: Math.random(),
-            });
+            clearTimeout(this.onLayoutTimeout);
+            this.onLayoutTimeout = setTimeout(() => {
+                this.setState({
+                    canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
+                    refreshKey: Math.random(),
+                });
+            }, 500);
         };
         this.state = {
             cpRef: React.createRef(),

@@ -54,7 +54,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     }
   }
 
-
+  onLayoutTimeout = 0;
 
 
   setValue = (val: number) => { if (this.state.cpRef.current !== null) { this.state.cpRef.current.setValue(val) }; }
@@ -62,11 +62,13 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
   onLayout = (event: LayoutChangeEvent) => {
     // {nativeEvent: { layout: {x, y, width, height}}}
     const { width, height } = event.nativeEvent.layout;
-    console.log("layautChange");
-    this.setState({
-      canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
-      refreshKey: Math.random(),
-    });
+    clearTimeout(this.onLayoutTimeout);
+    this.onLayoutTimeout = setTimeout(() => {
+      this.setState({
+        canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
+        refreshKey: Math.random(),
+      });
+    }, 500);
   }
 
   render() {
