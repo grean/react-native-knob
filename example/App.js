@@ -9,7 +9,7 @@ import { Knob } from 'react-native-knob';
 
 export default App = () => {
   const [val1, setVal1] = useState(40);
-  const [knobValue, setKnobValue] = useState(100);
+  const [knobValue, setKnobValue] = useState(50);
   const { width, height } = Dimensions.get("window");
   const [isLandscape, setIsLandscape] = useState(height < width);
   // let knobValue = 50;

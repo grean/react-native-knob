@@ -34,7 +34,6 @@ interface CircularPogressState {
     x: Animated.Value<number>;
     y: Animated.Value<number>;
     aroundCount: Animated.Value<number>;
-    colorIndex: Animated.Value<number>;
     finalValue: Animated.Value<number>;
     previousAngle: Animated.Value<number>;
     deltaSign: Animated.Value<number>;
@@ -42,9 +41,10 @@ interface CircularPogressState {
     translateY: Animated.Value<number>;
     state: Animated.Value<State>;
     largeArcFlag: Animated.Value<number>;
-    isFullCircle: Animated.Value<0 | 1>;
+    isNegative: Animated.Value<0 | 1>;
+    isNegativeChanged: Animated.Value<0 | 1>;
+    previousIsNegative: Animated.Value<0 | 1>;
     sweep: string;
-    testCircle: Animated.Value<number>;
 }
 export default class CircularProgress extends React.Component<CircularPogressProps, CircularPogressState> {
     constructor(props: CircularPogressProps);

@@ -56,6 +56,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
 
 
 
+
   setValue = (val: number) => { if (this.state.cpRef.current !== null) { this.state.cpRef.current.setValue(val) }; }
 
   onLayout = (event: LayoutChangeEvent) => {

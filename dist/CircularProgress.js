@@ -20,26 +20,42 @@ export default class CircularProgress extends React.Component {
     constructor(props) {
         super(props);
         this.setValue = (value) => {
-            // console.log('testCP');
-            const { state, endAngle, aroundCount, α } = this.state;
             const { maxValue } = this.props;
+            const { state, endAngle, aroundCount, isNegative } = this.state;
+            const { PI } = Math;
+            const isNegativeValue = value < 0 ? 1 : 0;
+            let rapport = Math.abs(value / maxValue);
+            let aroundCountValue = Math.trunc(rapport);
+            let mantisse = rapport - aroundCountValue;
+            let endAngleValue = 2 * PI * mantisse;
+            if (isNegativeValue) {
+                endAngleValue -= 2 * PI;
+            }
+            aroundCount.setValue(aroundCountValue);
+            isNegative.setValue(isNegativeValue);
             state.setValue(State.UNDETERMINED);
-            endAngle.setValue(maxValue !== 0 ? value * 2 * Math.PI / maxValue : 0);
-            aroundCount.setValue(Math.floor(maxValue !== 0 ? value / maxValue : 0));
+            endAngle.setValue(Math.abs(endAngleValue));
         };
         const { PI } = Math;
         const { canvasSize, strokeWidth, value, maxValue, padding, strokeWidthDecoration } = this.props;
-        const aroundCountTmp = Math.floor(maxValue !== 0 ? value / maxValue : 0);
         const startAngle = 0;
         const cx = canvasSize / 2;
         const cy = canvasSize / 2;
         const r = (canvasSize - strokeWidth) / 2 - padding;
+        const isNegativeValue = value < 0 ? 1 : 0;
+        let rapport = Math.abs(value / maxValue);
+        let aroundCountValue = Math.trunc(rapport);
+        let mantisse = rapport - aroundCountValue;
+        let endAngleValue = 2 * PI * mantisse;
+        if (isNegativeValue) {
+            endAngleValue -= 2 * PI;
+        }
         this.state = {
             ...{ cx, cy, r },
             plateRadius: (canvasSize - strokeWidthDecoration) / 2,
             canvasRadius: canvasSize / 2,
             startAngle: new Value(startAngle),
-            endAngle: new Value(maxValue !== 0 ? value * 2 * PI / maxValue : 0),
+            endAngle: new Value(Math.abs(endAngleValue)),
             α: new Value(0),
             startX: cx + r * Math.cos(startAngle),
             startY: cy + r * Math.sin(startAngle),
@@ -47,8 +63,7 @@ export default class CircularProgress extends React.Component {
             endY: new Value(0),
             x: new Value(0),
             y: new Value(0),
-            aroundCount: new Value(aroundCountTmp),
-            colorIndex: new Value(aroundCountTmp),
+            aroundCount: new Value(aroundCountValue),
             finalValue: new Value(0),
             previousAngle: new Value(0),
             deltaSign: new Value(0),
@@ -56,9 +71,10 @@ export default class CircularProgress extends React.Component {
             translateY: new Value(0),
             state: new Value(State.UNDETERMINED),
             largeArcFlag: new Value(0),
-            isFullCircle: new Value(0),
             sweep: '1',
-            testCircle: new Value(0),
+            isNegative: new Value(isNegativeValue),
+            isNegativeChanged: new Value(0),
+            previousIsNegative: new Value(isNegativeValue),
         };
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -69,15 +85,15 @@ export default class CircularProgress extends React.Component {
         const { PI } = Math;
         // const { margin } = this.props;
         const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback } = this.props;
-        const { colorIndex, x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isFullCircle, testCircle } = this.state;
+        const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative } = this.state;
         // isLandscape, 
-        const bgColor = interpolateColor(abs(colorIndex), {
+        const bgColor = interpolateColor(aroundCount, {
             inputRange: colors.map((v, i) => i),
             outputRange: colors,
         });
         let fgColorsTmp = [...colors];
         fgColorsTmp.shift();
-        const fgColor = interpolateColor(abs(colorIndex), {
+        const fgColor = interpolateColor(aroundCount, {
             inputRange: fgColorsTmp.map((v, i) => i),
             outputRange: fgColorsTmp,
         });
@@ -143,41 +159,51 @@ export default class CircularProgress extends React.Component {
             //when translateY === 0 then endAngle value is -0 and abs function don´t seems to remove sign.. so in this case we have to remove it by multiply by -1
             cond(and(eq(translateY, 0), greaterThan(translateX, 0)), set(endAngle, multiply(-1, endAngle))),
             debug('endAngle ', endAngle),
-            //SVG attribut computation for small or large arc. We always need large arc.
-            set(largeArcFlag, cond(lessOrEq(sub(endAngle, startAngle), PI), 0, 1)),
             //calculate end arcTo coordinates
             set(endX, add(cx, multiply(r, cos(endAngle)))),
             set(endY, add(cy, multiply(r, sin(endAngle)))),
             cond(eq(state, State.ACTIVE), [
                 //if endAngle > previousAngle then sign is 'plus' otherwise it´s 'minus'
+                //if deltaSign is positiv it means that we go through positive values
                 set(deltaSign, sub(endAngle, previousAngle)),
-                cond(greaterThan(abs(deltaSign), 4), cond(greaterThan(deltaSign, 0), cond(greaterThan(aroundCount, 0), set(aroundCount, sub(aroundCount, 1)), set(aroundCount, sub(aroundCount, negative ? 1 : 0))), set(aroundCount, add(aroundCount, 1))))
+                //we detect if we need to add or remove a roundCount
+                cond(greaterThan(abs(deltaSign), 4), [
+                    set(isNegativeChanged, 0),
+                    set(previousIsNegative, isNegative),
+                    cond(eq(aroundCount, 0), [
+                        debug('test isNegative', greaterThan(deltaSign, 0)),
+                        set(isNegative, greaterThan(deltaSign, 0)),
+                        set(isNegativeChanged, cond(neq(isNegative, previousIsNegative), 1, 0)),
+                    ]),
+                    cond(eq(isNegativeChanged, 0), [
+                        debug('test2 aroundCount will change', isNegativeChanged),
+                        cond(greaterThan(deltaSign, 0), [
+                            debug('test2 aroundCount -1', isNegativeChanged),
+                            set(aroundCount, cond(eq(isNegative, 1), add(aroundCount, 1), sub(aroundCount, 1))),
+                        ], [
+                            debug('test2 aroundCount +1', greaterThan(deltaSign, 0)),
+                            set(aroundCount, cond(eq(isNegative, 1), sub(aroundCount, 1), add(aroundCount, 1))),
+                        ]),
+                    ]),
+                ])
             ]),
             debug('deltaSign ', deltaSign),
+            debug('isNegative ', isNegative),
+            debug('isNegativeChanged ', isNegativeChanged),
             debug('aroundCount ', aroundCount),
-            cond(lessThan(aroundCount, 0), [
+            cond(eq(isNegative, 1), [
                 //inverse the logic if we are negative
                 set(largeArcFlag, cond(lessOrEq(sub(endAngle, startAngle), PI), 1, 0)),
-                set(colorIndex, cond(neq(endAngle, 0), add(aroundCount, 1), aroundCount)),
             ], [
-                set(colorIndex, aroundCount),
+                set(largeArcFlag, cond(lessOrEq(sub(endAngle, startAngle), PI), 0, 1)),
             ]),
-            // debug(concat("M ", endX, " ", endY, " A ", r, " ", r, " 0 ", largeArcFlag, " ", sweep, " ", startX, " ", startY), 0),
-            debug('colorIndex ', colorIndex),
             debug('largeArcFlag ', largeArcFlag),
-            // call([aroundCount], ([aroundCount]) => setGradientIndex(aroundCount)),
-            // onChange(aroundCount, call() => ),
             set(previousAngle, endAngle),
-            // set(testCircle, abs(divide(endAngle, 2 * PI))),
-            // debug('testCircle ', testCircle),
-            // set(isFullCircle, eq(abs(divide(endAngle, 2 * PI)), 1)),
-            // debug('isFullCircle ', isFullCircle),
-            // set(finalValue, round(add(multiply(divide(endAngle, 2 * PI), 100), multiply(100,
-            //   cond(isFullCircle,
-            //     sub(aroundCount, 1),
-            //     aroundCount
-            //   )
-            // )))),
+            set(finalValue, cond(eq(isNegative, 1), [
+                round(add(sub(divide(multiply(endAngle, 100), 2 * PI), 100), multiply(-100, aroundCount)))
+            ], [
+                round(add(divide(multiply(endAngle, 100), 2 * PI), multiply(100, aroundCount)))
+            ])),
             onChange(finalValue, call([finalValue], callback)),
             debug('finalValue ', finalValue),
         ])}
@@ -225,15 +251,9 @@ export default class CircularProgress extends React.Component {
         // stroke="url(#grad)"
         stroke={fgColor} fill="none" 
         // d="M 95 0 A 10 10 0 0 1 200 200"
-        d={cond(lessThan(finalValue, 0), 
+        d={cond(eq(isNegative, 1), 
         //inverse the logic if we are negative
-        string `M ${endX} ${endY} A ${r} ${r} 0 ${cond(eq(largeArcFlag, 0), '0', '1')} ${sweep} ${startX} ${startY}`, string `M ${startX} ${startY} A ${r} ${r} 0 ${cond(eq(largeArcFlag, 0), '0', '1')} ${sweep} ${endX} ${endY}`)} 
-        // d={cond(lessThan(aroundCount, 0),
-        //   //inverse the logic if we are negative
-        //   string`M ${endX} ${endY} A ${r} ${r} 0 ${cond(eq(largeArcFlag, 0), '0', '1')} ${sweep} ${startX} ${startY}`,
-        //   string`M ${startX} ${startY} A ${r} ${r} 0 ${largeArcFlag} ${sweep} ${endX} ${endY}`
-        // )}
-        {...{ strokeWidth }}/>
+        string `M ${endX} ${endY} A ${r} ${r} 0 ${cond(eq(largeArcFlag, 0), '0', '1')} ${sweep} ${startX} ${startY}`, string `M ${startX} ${startY} A ${r} ${r} 0 ${cond(eq(largeArcFlag, 0), '0', '1')} ${sweep} ${endX} ${endY}`)} {...{ strokeWidth }}/>
                   {textDisplay && <Animated.View style={{
             transform: [
                 { rotateZ: rotateZText },
