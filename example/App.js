@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Text, Dimensions } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 
 // import { Knob } from '../dist/index.js';
 import { Knob } from 'react-native-knob';

@@ -55,6 +55,7 @@ interface CircularPogressState {
   isNegativeChanged: Animated.Value<0 | 1>;
   previousIsNegative: Animated.Value<0 | 1>;
   sweep: string;
+  counterclockwise: Animated.Value<0 | 1>;
 }
 
 const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or, onChange, call, neq } = Animated;
@@ -115,6 +116,7 @@ export default class CircularProgress extends React.Component<CircularPogressPro
       isNegative: new Value(isNegativeValue),
       isNegativeChanged: new Value(0),
       previousIsNegative: new Value(isNegativeValue),
+      counterclockwise: new Value(0),
     }
   }
 
@@ -147,7 +149,7 @@ export default class CircularProgress extends React.Component<CircularPogressPro
     // const { margin } = this.props;
     const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback } = this.props;
 
-    const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative } = this.state;
+    const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise } = this.state;
 
     // isLandscape, 
 
@@ -244,26 +246,39 @@ export default class CircularProgress extends React.Component<CircularPogressPro
               set(endY, add(cy, multiply(r, sin(endAngle)))),
               cond(eq(state, State.ACTIVE), [
                 //if endAngle > previousAngle then sign is 'plus' otherwise it´s 'minus'
-                //if deltaSign is positiv it means that we go through positive values
+                //if deltaSign is negative it means that we go counterclockwise
                 set(deltaSign, sub(endAngle, previousAngle)),
                 //we detect if we need to add or remove a roundCount
                 cond(greaterThan(abs(deltaSign), 4), [
                   set(isNegativeChanged, 0),
+                  // We store the previous sign to detect the we have just changed the sign
                   set(previousIsNegative, isNegative),
 
+                  set(counterclockwise, greaterThan(deltaSign, 0)),
+                  // We pass in negatives if we are at aroundCount 0
                   cond(eq(aroundCount, 0), [
-                    debug('test isNegative', greaterThan(deltaSign, 0)),
-                    set(isNegative, greaterThan(deltaSign, 0)),
-
+                    debug('test isNegative', counterclockwise),
+                    // And if we are allowed to change the sign and andiHorraire
+                    set(isNegative, and(eq(negative ? 1 : 0, 1), counterclockwise)),
+                    // Have we just changed the sign ?
                     set(isNegativeChanged, cond(neq(isNegative, previousIsNegative), 1, 0)),
                   ]),
+                  //If we have NOT change the sign we have to update aroundCount var
                   cond(eq(isNegativeChanged, 0), [
-                    debug('test2 aroundCount will change', isNegativeChanged),
-                    cond(greaterThan(deltaSign, 0), [
-                      debug('test2 aroundCount -1', isNegativeChanged),
-                      set(aroundCount, cond(eq(isNegative, 1), add(aroundCount, 1), sub(aroundCount, 1))),
+                    //And we are counterclockwise
+                    cond(counterclockwise, [
+                      //We +1 if we are negative otherwise we -1 because in negative a counterclockwise turn IS +1 aroundCount 
+                      set(aroundCount, cond(eq(isNegative, 1),
+                        add(aroundCount, 1),
+                        //we are allowed to substract 1 to aroundCount if we have more than one turn
+                        cond(greaterThan(aroundCount, 0), [
+                          sub(aroundCount, 1)
+                        ], [
+                          sub(aroundCount, negative ? 1 : 0)
+                        ])
+                      )),
                     ], [
-                      debug('test2 aroundCount +1', greaterThan(deltaSign, 0)),
+                      //We -1 if we are negative 
                       set(aroundCount, cond(eq(isNegative, 1), sub(aroundCount, 1), add(aroundCount, 1))),
                     ]),
                   ]),

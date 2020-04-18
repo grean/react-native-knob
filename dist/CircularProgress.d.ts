@@ -45,6 +45,7 @@ interface CircularPogressState {
     isNegativeChanged: Animated.Value<0 | 1>;
     previousIsNegative: Animated.Value<0 | 1>;
     sweep: string;
+    counterclockwise: Animated.Value<0 | 1>;
 }
 export default class CircularProgress extends React.Component<CircularPogressProps, CircularPogressState> {
     constructor(props: CircularPogressProps);
