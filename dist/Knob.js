@@ -11,13 +11,13 @@ export default class Knob extends React.Component {
         this.onLayout = (event) => {
             // {nativeEvent: { layout: {x, y, width, height}}}
             const { width, height } = event.nativeEvent.layout;
-            clearTimeout(this.onLayoutTimeout);
-            this.onLayoutTimeout = setTimeout(() => {
-                this.setState({
-                    canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
-                    refreshKey: Math.random(),
-                });
-            }, 500);
+            // clearTimeout(this.onLayoutTimeout);
+            // this.onLayoutTimeout = setTimeout(() => {
+            this.setState({
+                canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
+                refreshKey: Math.random(),
+            });
+            // }, 10);
         };
         this.state = {
             cpRef: React.createRef(),
