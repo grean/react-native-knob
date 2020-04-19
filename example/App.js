@@ -95,13 +95,14 @@ export default App = () => {
         strokeWidth={80}
         value={knobValue}
         maxValue={100}
-        rotation={0}
-        negative={true}
+        rotation={-Math.PI / 2}
+        negative={false}
         colors={['#F0EFF5', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']}
         gradientInt={[{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#E03997' }]}
         gradientExt={[{ offset: '100%', stopColor: '#E03997' }, { offset: '80%', stopColor: '#000' }]}
         textStyle={{ color: '#E03997' }}
         style={{ flex: 2 }}
+        callback={callback}
       />
     </View>
   );
