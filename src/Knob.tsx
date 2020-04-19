@@ -115,5 +115,6 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     gradientExt: [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }],
     textDisplay: true,
     style: {},
+    callback: () => { },
   };
 }
