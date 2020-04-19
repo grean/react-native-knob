@@ -173,7 +173,7 @@ The component will resize automatically to take all the space available by his c
 | textDisplay | If you don´t want the text in the middle | boolean | true
 | style | Change style of the knob main container | object | true
 | callback | This function will be called each time the knob´s value change. First param is an array and first value is the value of the knob | (values: readonly number[]) => void | callback: () => { }
-| canvasSize | Fix the size of the canvas | (values: readonly number[]) => void | callback: () => { }
+| canvasSize | Fix the size of the canvas |  number | undefined
 
 ## Contributing
 Pull requests are always welcome! Feel free to open a new GitHub issue for any changes that can be made.
