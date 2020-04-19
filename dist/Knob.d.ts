@@ -54,6 +54,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
         }[];
         textDisplay: boolean;
         style: {};
+        callback: () => void;
     };
 }
 //# sourceMappingURL=Knob.d.ts.map
