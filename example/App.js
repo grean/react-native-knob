@@ -5,7 +5,7 @@ import { Knob } from 'react-native-knob';
 
 export default App = () => {
   const [val1, setVal1] = useState(0);
-  const [knobValue, setKnobValue] = useState(0);
+  const [knobValue, setKnobValue] = useState(50);
   const { width, height } = Dimensions.get("window");
   const [isLandscape, setIsLandscape] = useState(height < width);
   let buttons = [-100, -33, -25, 0, 25, 33, 100];
@@ -52,6 +52,9 @@ export default App = () => {
       backgroundColor: '#E03997',
       color: 'white',
     },
+    knob: {
+      flex: isLandscape ? 2 : 1,
+    },
   });
 
 
@@ -90,18 +93,18 @@ export default App = () => {
       </View>
       <Knob
         ref={component => _knobRef = component}
-        margin={0}
-        padding={32}
-        strokeWidth={80}
+        margin={'5%'}
+        padding={'8.7%'}
+        strokeWidth={'10%'}
         value={knobValue}
-        maxValue={100}
+        maxValue={1000}
         rotation={-Math.PI / 2}
-        negative={false}
+        negative={true}
         colors={['#F0EFF5', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']}
         gradientInt={[{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#E03997' }]}
         gradientExt={[{ offset: '100%', stopColor: '#E03997' }, { offset: '80%', stopColor: '#000' }]}
-        textStyle={{ color: '#E03997' }}
-        style={{ flex: 2 }}
+        style={styles.knob}
+        textStyle={{ color: 'white', textAlign: 'center', fontSize: '15.333' }}
         callback={callback}
       />
     </View>
