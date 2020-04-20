@@ -5,9 +5,9 @@ import DeviceInfo from 'react-native-device-info';
 import CircularProgress from './CircularProgress';
 
 export interface KnobProps {
-  margin: number;
-  padding: number;
-  strokeWidth: number;
+  margin: number | string;
+  padding: number | string;
+  strokeWidth: number | string;
   strokeWidthDecoration: number;
   value: number;
   maxValue: number;
@@ -17,11 +17,10 @@ export interface KnobProps {
   gradientInt: Array<StopGradient>;
   gradientExt: Array<StopGradient>;
   style: object;
-  textStyle: object;
+  textStyle: TextStyle;
   textDisplay: boolean;
   callback: (values: readonly number[]) => void;
   canvasSize: number | undefined;
-  // buttons: Array<ButtonKnob>;
 }
 
 export interface StopGradient {
@@ -29,16 +28,16 @@ export interface StopGradient {
   stopColor: string;
 }
 
+export interface TextStyle {
+  color: string;
+  textAlign: "auto" | "center" | "left" | "right" | "justify" | undefined;
+  fontSize: string;
+}
+
 export interface KnobState {
   cpRef: React.RefObject<CircularProgress>;
-  // width: number,
-  // height: number,
-  // isLandscape: boolean,
   canvasSize: number | undefined,
   refreshKey: number,
-  // value: number;
-  // buttonColor: string;
-  // textColor: string;
 }
 
 export default class Knob extends React.Component<KnobProps, KnobState> {
@@ -46,9 +45,6 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     super(props);
     this.state = {
       cpRef: React.createRef<CircularProgress>(),
-      // width: Dimensions.get('window').width,
-      // height: Dimensions.get('window').height,
-      // isLandscape: false,
       canvasSize: props.canvasSize,
       refreshKey: Math.random(),
     }
@@ -60,22 +56,23 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
   setValue = (val: number) => { if (this.state.cpRef.current !== null) { this.state.cpRef.current.setValue(val) }; }
 
   onLayout = (event: LayoutChangeEvent) => {
-    // {nativeEvent: { layout: {x, y, width, height}}}
     const { width, height } = event.nativeEvent.layout;
-    // clearTimeout(this.onLayoutTimeout);
-    // this.onLayoutTimeout = setTimeout(() => {
     this.setState({
       canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
       refreshKey: Math.random(),
     });
-    // }, 10);
   }
 
   render() {
     const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style } = this.props;
     const { cpRef, canvasSize, refreshKey } = this.state;
 
-    const canvasSizeMarged = (canvasSize ?? 0) - margin * 2;
+
+    const marginComputed = typeof margin === 'string' ? Number.parseFloat(margin.replace('%', '')) / 100 * (canvasSize ?? 0) : margin
+    const paddingComputed = typeof padding === 'string' ? Number.parseFloat(padding.replace('%', '')) / 100 * (canvasSize ?? 0) : padding
+    const strokeWidthComputed = typeof strokeWidth === 'string' ? Number.parseFloat(strokeWidth.replace('%', '')) / 100 * (canvasSize ?? 0) : strokeWidth
+
+    const canvasSizeMarged = (canvasSize ?? 0) - marginComputed * 2;
 
     return (
       <View style={[{
@@ -94,7 +91,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
             <CircularProgress
               key={refreshKey.toString()}
               ref={cpRef}
-              {...{ canvasSize: canvasSizeMarged, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}
+              {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}
             />
           </View>
         </View>
@@ -104,7 +101,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
   static defaultProps = {
     margin: 0,
     padding: 0,
-    strokeWidth: 90,
+    strokeWidth: '20%',
     strokeWidthDecoration: 30,
     value: 25,
     maxValue: 100,
@@ -114,6 +111,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     gradientInt: [{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#fff' }],
     gradientExt: [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }],
     textDisplay: true,
+    textStyle: {},
     style: {},
     callback: () => { },
   };

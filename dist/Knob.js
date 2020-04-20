@@ -9,21 +9,14 @@ export default class Knob extends React.Component {
             this.state.cpRef.current.setValue(val);
         } ; };
         this.onLayout = (event) => {
-            // {nativeEvent: { layout: {x, y, width, height}}}
             const { width, height } = event.nativeEvent.layout;
-            // clearTimeout(this.onLayoutTimeout);
-            // this.onLayoutTimeout = setTimeout(() => {
             this.setState({
                 canvasSize: this.props.canvasSize ?? PixelRatio.roundToNearestPixel(Math.min(width, height)),
                 refreshKey: Math.random(),
             });
-            // }, 10);
         };
         this.state = {
             cpRef: React.createRef(),
-            // width: Dimensions.get('window').width,
-            // height: Dimensions.get('window').height,
-            // isLandscape: false,
             canvasSize: props.canvasSize,
             refreshKey: Math.random(),
         };
@@ -31,7 +24,10 @@ export default class Knob extends React.Component {
     render() {
         const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style } = this.props;
         const { cpRef, canvasSize, refreshKey } = this.state;
-        const canvasSizeMarged = (canvasSize ?? 0) - margin * 2;
+        const marginComputed = typeof margin === 'string' ? Number.parseFloat(margin.replace('%', '')) / 100 * (canvasSize ?? 0) : margin;
+        const paddingComputed = typeof padding === 'string' ? Number.parseFloat(padding.replace('%', '')) / 100 * (canvasSize ?? 0) : padding;
+        const strokeWidthComputed = typeof strokeWidth === 'string' ? Number.parseFloat(strokeWidth.replace('%', '')) / 100 * (canvasSize ?? 0) : strokeWidth;
+        const canvasSizeMarged = (canvasSize ?? 0) - marginComputed * 2;
         return (<View style={[{
                 flex: 1,
                 alignSelf: 'stretch',
@@ -45,7 +41,7 @@ export default class Knob extends React.Component {
             height: canvasSizeMarged,
             width: canvasSizeMarged,
         }}>
-            <CircularProgress key={refreshKey.toString()} ref={cpRef} {...{ canvasSize: canvasSizeMarged, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}/>
+            <CircularProgress key={refreshKey.toString()} ref={cpRef} {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}/>
           </View>
         </View>
       </View>);
@@ -54,7 +50,7 @@ export default class Knob extends React.Component {
 Knob.defaultProps = {
     margin: 0,
     padding: 0,
-    strokeWidth: 90,
+    strokeWidth: '20%',
     strokeWidthDecoration: 30,
     value: 25,
     maxValue: 100,
@@ -64,6 +60,7 @@ Knob.defaultProps = {
     gradientInt: [{ offset: '50%', stopColor: '#000' }, { offset: '80%', stopColor: '#fff' }],
     gradientExt: [{ offset: '100%', stopColor: '#fff' }, { offset: '90%', stopColor: '#000' }],
     textDisplay: true,
+    textStyle: {},
     style: {},
     callback: () => { },
 };

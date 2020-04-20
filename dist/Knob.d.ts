@@ -2,9 +2,9 @@ import React from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import CircularProgress from './CircularProgress';
 export interface KnobProps {
-    margin: number;
-    padding: number;
-    strokeWidth: number;
+    margin: number | string;
+    padding: number | string;
+    strokeWidth: number | string;
     strokeWidthDecoration: number;
     value: number;
     maxValue: number;
@@ -14,7 +14,7 @@ export interface KnobProps {
     gradientInt: Array<StopGradient>;
     gradientExt: Array<StopGradient>;
     style: object;
-    textStyle: object;
+    textStyle: TextStyle;
     textDisplay: boolean;
     callback: (values: readonly number[]) => void;
     canvasSize: number | undefined;
@@ -22,6 +22,11 @@ export interface KnobProps {
 export interface StopGradient {
     offset: string;
     stopColor: string;
+}
+export interface TextStyle {
+    color: string;
+    textAlign: "auto" | "center" | "left" | "right" | "justify" | undefined;
+    fontSize: string;
 }
 export interface KnobState {
     cpRef: React.RefObject<CircularProgress>;
@@ -37,7 +42,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     static defaultProps: {
         margin: number;
         padding: number;
-        strokeWidth: number;
+        strokeWidth: string;
         strokeWidthDecoration: number;
         value: number;
         maxValue: number;
@@ -53,6 +58,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
             stopColor: string;
         }[];
         textDisplay: boolean;
+        textStyle: {};
         style: {};
         callback: () => void;
     };

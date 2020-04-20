@@ -85,8 +85,11 @@ export default class CircularProgress extends React.Component {
     render() {
         const { PI } = Math;
         // const { margin } = this.props;
-        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback } = this.props;
+        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue } = this.props;
         const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise } = this.state;
+        const fontSizePercent = textStyle.fontSize === undefined ? 0.125 : Number.parseFloat(textStyle.fontSize.replace('%', '')) / 100;
+        const fontSize = Math.round(canvasSize * fontSizePercent);
+        const textStyleComputed = { ...{ color: 'white', textAlign: 'center' }, ...textStyle, ...{ fontSize } };
         // isLandscape, 
         const bgColor = interpolateColor(aroundCount, {
             inputRange: colors.map((v, i) => i),
@@ -213,9 +216,9 @@ export default class CircularProgress extends React.Component {
             debug('largeArcFlag ', largeArcFlag),
             set(previousAngle, endAngle),
             set(finalValue, cond(eq(isNegative, 1), [
-                round(add(sub(divide(multiply(endAngle, 100), 2 * PI), 100), multiply(-100, aroundCount)))
+                round(add(sub(divide(multiply(endAngle, maxValue), 2 * PI), maxValue), multiply(-maxValue, aroundCount)))
             ], [
-                round(add(divide(multiply(endAngle, 100), 2 * PI), multiply(100, aroundCount)))
+                round(add(divide(multiply(endAngle, maxValue), 2 * PI), multiply(maxValue, aroundCount)))
             ])),
             onChange(finalValue, call([finalValue], callback)),
             debug('finalValue ', finalValue),
@@ -273,22 +276,13 @@ export default class CircularProgress extends React.Component {
             ],
             position: 'absolute',
             zIndex: 1000,
-            height: canvasSize * 0.2,
-            width: canvasSize * 0.4,
-            top: canvasSize / 2 - canvasSize * 0.2 / 2,
-            left: canvasSize / 2 - canvasSize * 0.4 / 2,
+            height: canvasSize * fontSizePercent,
+            width: canvasSize * fontSizePercent * 4,
+            top: canvasSize / 2 - canvasSize * fontSizePercent / 2,
+            left: canvasSize / 2 - canvasSize * fontSizePercent * 2,
             justifyContent: 'space-evenly',
         }}>
-                    <ReText text={concat(finalValue)} style={{
-            ...{
-                color: 'white',
-                // borderColor: plateColor,
-                // borderWidth: 1,
-                // width: canvasSize * 0.5,
-                textAlign: 'center',
-                fontSize: canvasSize / 8,
-            }, ...textStyle
-        }}/>
+                    <ReText text={concat(finalValue)} style={textStyleComputed}/>
                   </Animated.View>}
                 </AnimatedSvg>
               </Animated.View>

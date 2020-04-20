@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { State } from 'react-native-gesture-handler';
-import { StopGradient } from './Knob';
+import { StopGradient, TextStyle } from './Knob';
 interface CircularPogressProps {
     canvasSize: number;
     strokeWidth: number;
@@ -14,7 +14,7 @@ interface CircularPogressProps {
     colors: Array<string>;
     gradientInt: Array<StopGradient>;
     gradientExt: Array<StopGradient>;
-    textStyle: object;
+    textStyle: TextStyle;
     textDisplay: boolean;
     callback: (values: readonly number[]) => void;
 }
