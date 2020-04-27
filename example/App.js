@@ -5,6 +5,7 @@ import { Knob } from 'react-native-knob';
 
 export default App = () => {
   const [val1, setVal1] = useState(0);
+  const [init, setInit] = useState(0);
   const [knobValue, setKnobValue] = useState(50);
   const { width, height } = Dimensions.get("window");
   const [isLandscape, setIsLandscape] = useState(height < width);
@@ -12,6 +13,11 @@ export default App = () => {
 
   callback = (values) => {
     setKnobValue(values[0]);
+  }
+
+  callbackInit = (values) => {
+    setInit(init + values[0]);
+    _knobRef.resetInit();
   }
 
   updateKnobValue = (value) => {
@@ -75,12 +81,24 @@ export default App = () => {
           value={val1.toString()}
           style={styles.label}
         />
+        <TextInput
+          value={init.toString()}
+          style={styles.label}
+        />
       </View>
       <View style={styles.buttons}>
         <Button
           style={styles.button}
           title="Change State"
           onPress={() => setVal1(val1 + 1)}
+        />
+        <Button
+          style={styles.button}
+          title="init"
+          onPress={() => {
+            _knobRef.setValue(init)
+            _knobRef.initKnob();
+          }}
         />
       </View>
       <View style={styles.buttons}>
@@ -97,7 +115,7 @@ export default App = () => {
         padding={'8.7%'}
         strokeWidth={'10%'}
         value={knobValue}
-        maxValue={1000}
+        maxValue={100}
         rotation={-Math.PI / 2}
         negative={true}
         colors={['#F0EFF5', '#E03997', '#6435C9', '#A5673F', '#AAA', '#888', '#666', '#444', '#222', '#000']}
@@ -105,7 +123,7 @@ export default App = () => {
         gradientExt={[{ offset: '100%', stopColor: '#E03997' }, { offset: '80%', stopColor: '#000' }]}
         style={styles.knob}
         textStyle={{ color: 'white', textAlign: 'center', fontSize: '15.333' }}
-        callback={callback}
+        {...{ callback, callbackInit }}
       />
     </View>
   );

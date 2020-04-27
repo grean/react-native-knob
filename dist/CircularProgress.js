@@ -36,6 +36,12 @@ export default class CircularProgress extends React.Component {
             state.setValue(State.UNDETERMINED);
             endAngle.setValue(Math.abs(endAngleValue));
         };
+        this.initKnob = () => {
+            this.state.init.setValue(1);
+        };
+        this.resetInit = () => {
+            this.state.init.setValue(0);
+        };
         const { PI } = Math;
         const { canvasSize, strokeWidth, value, maxValue, padding, strokeWidthDecoration } = this.props;
         const startAngle = 0;
@@ -76,6 +82,7 @@ export default class CircularProgress extends React.Component {
             isNegativeChanged: new Value(0),
             previousIsNegative: new Value(isNegativeValue),
             counterclockwise: new Value(0),
+            init: new Value(0),
         };
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -85,8 +92,8 @@ export default class CircularProgress extends React.Component {
     render() {
         const { PI } = Math;
         // const { margin } = this.props;
-        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue } = this.props;
-        const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise } = this.state;
+        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit } = this.props;
+        const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise, init } = this.state;
         const fontSizePercent = textStyle.fontSize === undefined ? 0.125 : Number.parseFloat(textStyle.fontSize.replace('%', '')) / 100;
         const fontSize = Math.round(canvasSize * fontSizePercent);
         const textStyleComputed = { ...{ color: 'white', textAlign: 'center' }, ...textStyle, ...{ fontSize } };
@@ -220,6 +227,10 @@ export default class CircularProgress extends React.Component {
             ], [
                 round(add(divide(multiply(endAngle, maxValue), 2 * PI), multiply(maxValue, aroundCount)))
             ])),
+            debug('init1 ', init),
+            // cond(eq(init, 1), [
+            onChange(init, cond(eq(init, 1), call([finalValue], callbackInit))),
+            // ]),
             onChange(finalValue, call([finalValue], callback)),
             debug('finalValue ', finalValue),
         ])}

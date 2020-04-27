@@ -17,6 +17,7 @@ interface CircularPogressProps {
     textStyle: TextStyle;
     textDisplay: boolean;
     callback: (values: readonly number[]) => void;
+    callbackInit: (values: readonly number[]) => void;
 }
 interface CircularPogressState {
     cx: number;
@@ -46,11 +47,14 @@ interface CircularPogressState {
     previousIsNegative: Animated.Value<0 | 1>;
     sweep: string;
     counterclockwise: Animated.Value<0 | 1>;
+    init: Animated.Value<0 | 1>;
 }
 export default class CircularProgress extends React.Component<CircularPogressProps, CircularPogressState> {
     constructor(props: CircularPogressProps);
     shouldComponentUpdate(nextProps: CircularPogressProps, nextState: CircularPogressState): boolean;
     setValue: (value: number) => void;
+    initKnob: () => void;
+    resetInit: () => void;
     render(): JSX.Element;
 }
 export {};

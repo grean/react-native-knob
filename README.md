@@ -149,6 +149,11 @@ export default App = () => {
 You can set the Knob´s value imperatively using a ref on the Knob component and calling the _knobRef.setValue(value : number) on it. (See example above)
 
 If you change the state of the parent´s knob component, it will not rerender the knob. So you can´t control the value of the knob with a parent variable state.
+### Other imperative calls
+#### initKnob(val: number)
+You HAVE TO call setValue(value) before using initKnob, if you want to set a value.
+#### resetInit
+When callbackInit is called, use this function to reset the 'init' state of the knob. You can´t set the 'init' state and reset it in the same call.
 
 ## Responsive
 The component will resize automatically to take all the space available by his container in landscape mode or not.
@@ -173,6 +178,7 @@ The component will resize automatically to take all the space available by his c
 | textDisplay | If you don´t want the text in the middle | boolean | true
 | style | Change style of the knob main container | object | true
 | callback | This function will be called each time the knob´s value change. First param is an array and first value is the value of the knob | (values: readonly number[]) => void | callback: () => { }
+| callbackInit | This function will be called if you call imperatively the initKnob function. Allow you to know when the knob is ready to be dispayed if you have performance or refresh issues. In this callback, you can setState a display variable to show your parent component when the knob is ready. | (values: readonly number[]) => void | callback: () => { }
 | canvasSize | Fix the size of the canvas. Optional, if not provided, the size adapt to the space available to his container |  number | undefined
 
 ## Contributing

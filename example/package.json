@@ -14,7 +14,7 @@
     "react-native": "0.61.5",
     "react-native-device-info": "^5.5.4",
     "react-native-gesture-handler": "^1.6.1",
-    "react-native-knob": "^2.1.1",
+    "react-native-knob": "file:../react-native-knob-2.2.0.tgz",
     "react-native-reanimated": "^1.7.1",
     "react-native-redash": "^10.1.1",
     "react-native-svg": "^12.0.3"

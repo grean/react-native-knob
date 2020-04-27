@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
-import { Dimensions, View, LayoutChangeEvent, PixelRatio, RefreshControl } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
+import React from 'react';
+import { View, LayoutChangeEvent, PixelRatio } from 'react-native';
 
 import CircularProgress from './CircularProgress';
 
@@ -20,6 +19,7 @@ export interface KnobProps {
   textStyle: TextStyle;
   textDisplay: boolean;
   callback: (values: readonly number[]) => void;
+  callbackInit: (values: readonly number[]) => void;
   canvasSize: number | undefined;
 }
 
@@ -50,10 +50,23 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     }
   }
 
-  onLayoutTimeout = 0;
+  setValue = (val: number) => {
+    if (this.state.cpRef.current !== null) {
+      this.state.cpRef.current.setValue(val)
+    };
+  }
 
+  initKnob = () => {
+    if (this.state.cpRef.current !== null) {
+      this.state.cpRef.current.initKnob();
+    };
+  };
 
-  setValue = (val: number) => { if (this.state.cpRef.current !== null) { this.state.cpRef.current.setValue(val) }; }
+  resetInit = () => {
+    if (this.state.cpRef.current !== null) {
+      this.state.cpRef.current.resetInit();
+    }
+  }
 
   onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -64,7 +77,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
   }
 
   render() {
-    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style } = this.props;
+    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style, callbackInit } = this.props;
     const { cpRef, canvasSize, refreshKey } = this.state;
 
 
@@ -91,7 +104,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
             <CircularProgress
               key={refreshKey.toString()}
               ref={cpRef}
-              {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback }}
+              {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, callbackInit }}
             />
           </View>
         </View>
@@ -114,5 +127,6 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     textStyle: {},
     style: {},
     callback: () => { },
+    calbackInit: () => { },
   };
 }

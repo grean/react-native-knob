@@ -17,6 +17,7 @@ export interface KnobProps {
     textStyle: TextStyle;
     textDisplay: boolean;
     callback: (values: readonly number[]) => void;
+    callbackInit: (values: readonly number[]) => void;
     canvasSize: number | undefined;
 }
 export interface StopGradient {
@@ -35,8 +36,9 @@ export interface KnobState {
 }
 export default class Knob extends React.Component<KnobProps, KnobState> {
     constructor(props: KnobProps);
-    onLayoutTimeout: number;
     setValue: (val: number) => void;
+    initKnob: () => void;
+    resetInit: () => void;
     onLayout: (event: LayoutChangeEvent) => void;
     render(): JSX.Element;
     static defaultProps: {
@@ -61,6 +63,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
         textStyle: {};
         style: {};
         callback: () => void;
+        calbackInit: () => void;
     };
 }
 //# sourceMappingURL=Knob.d.ts.map

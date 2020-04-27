@@ -26,6 +26,7 @@ interface CircularPogressProps {
   textStyle: TextStyle;
   textDisplay: boolean;
   callback: (values: readonly number[]) => void;
+  callbackInit: (values: readonly number[]) => void;
 }
 
 interface CircularPogressState {
@@ -56,6 +57,7 @@ interface CircularPogressState {
   previousIsNegative: Animated.Value<0 | 1>;
   sweep: string;
   counterclockwise: Animated.Value<0 | 1>;
+  init: Animated.Value<0 | 1>;
 }
 
 const { multiply, Value, event, block, debug, set, sub, add, atan, divide, cos, sin, cond, concat, eq, tan, round, abs, and, or, onChange, call, neq } = Animated;
@@ -117,6 +119,7 @@ export default class CircularProgress extends React.Component<CircularPogressPro
       isNegativeChanged: new Value(0),
       previousIsNegative: new Value(isNegativeValue),
       counterclockwise: new Value(0),
+      init: new Value(0),
     }
   }
 
@@ -142,14 +145,22 @@ export default class CircularProgress extends React.Component<CircularPogressPro
     state.setValue(State.UNDETERMINED);
     endAngle.setValue(Math.abs(endAngleValue));
   }
+
+  initKnob = () => {
+    this.state.init.setValue(1);
+  }
+
+  resetInit = () => {
+    this.state.init.setValue(0);
+  }
   // const [gradientIndex, setGradientIndex] = useState(0);
 
   render() {
     const { PI } = Math;
     // const { margin } = this.props;
-    const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue } = this.props;
+    const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit } = this.props;
 
-    const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise } = this.state;
+    const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise, init } = this.state;
 
     const fontSizePercent = textStyle.fontSize === undefined ? 0.125 : Number.parseFloat(textStyle.fontSize.replace('%', '')) / 100;
     const fontSize = Math.round(canvasSize * fontSizePercent);
@@ -308,6 +319,8 @@ export default class CircularProgress extends React.Component<CircularPogressPro
               ], [
                 round(add(divide(multiply(endAngle, maxValue), 2 * PI), multiply(maxValue, aroundCount)))
               ])),
+              debug('init1 ', init),
+              onChange(init, cond(eq(init, 1), call([finalValue], callbackInit))),
               onChange(finalValue, call([finalValue], callback)),
               debug('finalValue ', finalValue),
             ])

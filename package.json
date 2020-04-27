@@ -1,6 +1,6 @@
 {
   "name": "react-native-knob",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Knob component for react-native using reanimated and panGestureHandler",
   "main": "/dist/index.js",
   "scripts": {
