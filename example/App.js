@@ -123,6 +123,7 @@ export default App = () => {
         gradientExt={[{ offset: '100%', stopColor: '#E03997' }, { offset: '80%', stopColor: '#000' }]}
         style={styles.knob}
         textStyle={{ color: 'white', textAlign: 'center', fontSize: '15.333' }}
+        textUnit={'%'}
         {...{ callback, callbackInit }}
       />
     </View>
