@@ -18,6 +18,7 @@ interface CircularPogressProps {
     textDisplay: boolean;
     callback: (values: readonly number[]) => void;
     callbackInit: (values: readonly number[]) => void;
+    textUnit: string;
 }
 interface CircularPogressState {
     cx: number;

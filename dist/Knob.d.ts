@@ -19,6 +19,7 @@ export interface KnobProps {
     callback: (values: readonly number[]) => void;
     callbackInit: (values: readonly number[]) => void;
     canvasSize: number | undefined;
+    textUnit: string;
 }
 export interface StopGradient {
     offset: string;
@@ -64,6 +65,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
         style: {};
         callback: () => void;
         calbackInit: () => void;
+        textUnit: string;
     };
 }
 //# sourceMappingURL=Knob.d.ts.map

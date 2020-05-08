@@ -35,7 +35,7 @@ export default class Knob extends React.Component {
         };
     }
     render() {
-        const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style, callbackInit } = this.props;
+        const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style, callbackInit, textUnit } = this.props;
         const { cpRef, canvasSize, refreshKey } = this.state;
         const marginComputed = typeof margin === 'string' ? Number.parseFloat(margin.replace('%', '')) / 100 * (canvasSize ?? 0) : margin;
         const paddingComputed = typeof padding === 'string' ? Number.parseFloat(padding.replace('%', '')) / 100 * (canvasSize ?? 0) : padding;
@@ -54,7 +54,7 @@ export default class Knob extends React.Component {
             height: canvasSizeMarged,
             width: canvasSizeMarged,
         }}>
-            <CircularProgress key={refreshKey.toString()} ref={cpRef} {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, callbackInit }}/>
+            <CircularProgress key={refreshKey.toString()} ref={cpRef} {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, callbackInit, textUnit }}/>
           </View>
         </View>
       </View>);
@@ -77,5 +77,6 @@ Knob.defaultProps = {
     style: {},
     callback: () => { },
     calbackInit: () => { },
+    textUnit: '',
 };
 //# sourceMappingURL=Knob.js.map

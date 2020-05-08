@@ -27,6 +27,7 @@ interface CircularPogressProps {
   textDisplay: boolean;
   callback: (values: readonly number[]) => void;
   callbackInit: (values: readonly number[]) => void;
+  textUnit: string;
 }
 
 interface CircularPogressState {
@@ -158,7 +159,7 @@ export default class CircularProgress extends React.Component<CircularPogressPro
   render() {
     const { PI } = Math;
     // const { margin } = this.props;
-    const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit } = this.props;
+    const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit, textUnit } = this.props;
 
     const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise, init } = this.state;
 
@@ -440,7 +441,7 @@ export default class CircularProgress extends React.Component<CircularPogressPro
                     // borderWidth: 1,
                   }}>
                     <ReText
-                      text={concat(finalValue)}
+                      text={concat(finalValue, textUnit)}
                       style={textStyleComputed}
                     />
                   </Animated.View>}

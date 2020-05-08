@@ -21,6 +21,7 @@ export interface KnobProps {
   callback: (values: readonly number[]) => void;
   callbackInit: (values: readonly number[]) => void;
   canvasSize: number | undefined;
+  textUnit: string;
 }
 
 export interface StopGradient {
@@ -77,7 +78,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
   }
 
   render() {
-    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style, callbackInit } = this.props;
+    const { margin, strokeWidth, rotation, value, maxValue, padding, strokeWidthDecoration, negative, colors, gradientExt, gradientInt, textStyle, textDisplay, callback, style, callbackInit, textUnit } = this.props;
     const { cpRef, canvasSize, refreshKey } = this.state;
 
 
@@ -104,7 +105,7 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
             <CircularProgress
               key={refreshKey.toString()}
               ref={cpRef}
-              {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, callbackInit }}
+              {...{ canvasSize: canvasSizeMarged, strokeWidth: strokeWidthComputed, rotation, value, maxValue, padding: paddingComputed, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, callbackInit, textUnit }}
             />
           </View>
         </View>
@@ -128,5 +129,6 @@ export default class Knob extends React.Component<KnobProps, KnobState> {
     style: {},
     callback: () => { },
     calbackInit: () => { },
+    textUnit: '',
   };
 }

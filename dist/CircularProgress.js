@@ -92,7 +92,7 @@ export default class CircularProgress extends React.Component {
     render() {
         const { PI } = Math;
         // const { margin } = this.props;
-        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit } = this.props;
+        const { canvasSize, strokeWidth, rotation, strokeWidthDecoration, negative, colors, gradientInt, gradientExt, textStyle, textDisplay, callback, maxValue, callbackInit, textUnit } = this.props;
         const { x, y, state, cx, cy, r, startAngle, endAngle, canvasRadius, translateX, translateY, α, largeArcFlag, endX, endY, deltaSign, aroundCount, previousAngle, finalValue, plateRadius, sweep, startX, startY, isNegative, isNegativeChanged, previousIsNegative, counterclockwise, init } = this.state;
         const fontSizePercent = textStyle.fontSize === undefined ? 0.125 : Number.parseFloat(textStyle.fontSize.replace('%', '')) / 100;
         const fontSize = Math.round(canvasSize * fontSizePercent);
@@ -228,9 +228,7 @@ export default class CircularProgress extends React.Component {
                 round(add(divide(multiply(endAngle, maxValue), 2 * PI), multiply(maxValue, aroundCount)))
             ])),
             debug('init1 ', init),
-            // cond(eq(init, 1), [
             onChange(init, cond(eq(init, 1), call([finalValue], callbackInit))),
-            // ]),
             onChange(finalValue, call([finalValue], callback)),
             debug('finalValue ', finalValue),
         ])}
@@ -293,7 +291,7 @@ export default class CircularProgress extends React.Component {
             left: canvasSize / 2 - canvasSize * fontSizePercent * 2,
             justifyContent: 'space-evenly',
         }}>
-                    <ReText text={concat(finalValue)} style={textStyleComputed}/>
+                    <ReText text={concat(finalValue, textUnit)} style={textStyleComputed}/>
                   </Animated.View>}
                 </AnimatedSvg>
               </Animated.View>
