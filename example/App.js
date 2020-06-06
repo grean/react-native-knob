@@ -59,7 +59,7 @@ export default App = () => {
       color: 'white',
     },
     knob: {
-      flex: isLandscape ? 2 : 1,
+      flex: isLandscape ? 2 : 3,
     },
   });
 
