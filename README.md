@@ -184,6 +184,12 @@ The component will resize automatically to take all the space available by his c
 ## Contributing
 Pull requests are always welcome! Feel free to open a new GitHub issue for any changes that can be made.
 
+## Compilation
+npm run build
+
+## Test on Example App
+npm pack && cd example/ && npm i ../react-native-knob-2.3.2.tgz
+
 ## Author
 Réan Guillaume
 
