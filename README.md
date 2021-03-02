@@ -36,7 +36,7 @@ It concerns the react-native-gesture-handler package see [documentation here](ht
 ## Usage
 See Example app for testing.
 
-```react
+```jsx
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Text, Dimensions } from 'react-native';
 
