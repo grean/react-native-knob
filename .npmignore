@@ -1,8 +1,12 @@
-node_modules/
-src/
-assets/
 example/
+src/
+node_modules/
+assets/
+notes/
 
-package-lock.json
 tsconfig.json
-*.tgz
+.gitignore
+.DS_Store
+package-lock.json
+yarn.lock
+yarn-error.log

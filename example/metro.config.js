@@ -1,17 +1,12 @@
-/**
- * Metro configuration for React Native
- * https://github.com/facebook/react-native
- *
- * @format
- */
+let config = null;
+try {
+  //Use this script when your are in a monorepo yarn workspaces
+  config = require('../../../metro.config');
+} catch (ex) {
+  config = require('@grean/react-native-metro-config-app-example/index.js');
+}
 
-module.exports = {
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-  },
-};
+// console.log(config)
+
+module.exports = config
+

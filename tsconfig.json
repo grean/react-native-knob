@@ -1,26 +1,55 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "module": "ESNext",
     "esModuleInterop": true,
     "isolatedModules": true,
-    "jsx": "react-native",
+    // "jsx": "react",
     "lib": [
       "ES6"
     ],
-    "moduleResolution": "node",
-    "strict": true,
     "target": "ESNext",
+    ///////////////////////////
+    // "target": "es6",
+    "module": "ESNext",
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
+    // "outDir": "./lib",
+    "strict": true,
+    "jsx": "react-native",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
   },
   "include": [
-    "./src/index.ts"
+    "src/index.ts"
   ],
   "exclude": [
     "node_modules",
+    "**/__tests__/*"
   ]
 }
+// {
+//   "compilerOptions": {
+//     "outDir": "./dist",
+//     "allowJs": true,
+//     "allowSyntheticDefaultImports": true,
+//     "module": "ESNext",
+//     "esModuleInterop": true,
+//     "isolatedModules": true,
+//     "jsx": "react-native",
+//     "lib": [
+//       "ES6"
+//     ],
+//     "moduleResolution": "node",
+//     "strict": true,
+//     "target": "ESNext",
+//     "declaration": true,
+//     "declarationMap": true,
+//     "sourceMap": true
+//   },
+//   "include": [
+//     "./src/index.ts"
+//   ],
+//   "exclude": [
+//     "node_modules",
+//   ]
+// }

@@ -1,35 +1,33 @@
 {
-  "name": "example",
-  "version": "0.0.1",
-  "private": true,
+  "name": "reanimated-circles-example",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
-    "test": "jest",
-    "lint": "eslint ."
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
   },
   "dependencies": {
-    "react": "16.9.0",
-    "react-native": "0.61.5",
-    "react-native-device-info": "^5.5.4",
-    "react-native-gesture-handler": "^1.6.1",
-    "react-native-knob": "file:../react-native-knob-2.3.2.tgz",
-    "react-native-reanimated": "^1.9.0",
-    "react-native-redash": "^10.1.1",
-    "react-native-svg": "^12.0.3"
+    "@grean/react-native-metro-config-app-example": "~0.0.4",
+    "expo": "^42.0.0",
+    "expo-font": "~9.2.1",
+    "expo-status-bar": "~1.0.4",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-reanimated": "~2.2.0",
+    "react-native-redash": "^16.0.11",
+    "react-native-svg": "12.1.1",
+    "react-native-web": "~0.13.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/runtime": "^7.6.2",
-    "@react-native-community/eslint-config": "^0.0.5",
-    "babel-jest": "^24.9.0",
-    "eslint": "^6.5.1",
-    "jest": "^24.9.0",
-    "metro-react-native-babel-preset": "^0.56.0",
-    "react-test-renderer": "16.9.0"
+    "@babel/core": "~7.9.0",
+    "@types/react": "~16.9.35",
+    "@types/react-native": "~0.63.2",
+    "typescript": "~4.2.4"
   },
-  "jest": {
-    "preset": "react-native"
-  }
+  "private": true
 }

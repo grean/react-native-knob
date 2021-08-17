@@ -1,3 +1,2 @@
-import Knob from './Knob';
-
-export { Knob };
+import Viewport from './Viewport'
+export default Viewport
